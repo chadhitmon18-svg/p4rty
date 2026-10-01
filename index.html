@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>p4rty — Mini Game Night</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <style>
 :root{
   --blue:#1769ff; --blue2:#0b2e78; --red:#ff3158; --red2:#9f1239;
@@ -56,19 +57,20 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 @keyframes deal{0%{opacity:0;transform:translateY(-80px) rotate(-8deg) scale(.7)}100%{opacity:1;transform:none}}
 .hand{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:25px 0}.bot-hand{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:10px 0 22px}.card.back{background:linear-gradient(135deg,#102e6d,#15204c);border-color:#7897d6;color:#fff;overflow:hidden}.card.back:before{content:"p4rty";font-size:15px;letter-spacing:2px;opacity:.9;border:2px solid #ffffff77;padding:20px 7px;border-radius:8px;transform:rotate(-8deg)}
 #unoCenter{display:flex;flex-direction:column;align-items:center;gap:12px}.last-card{min-height:120px}
-.alien-field{height:360px;border-radius:18px;background:linear-gradient(90deg,#071c15,#0a1020 48%,#171923);
- border:1px solid #2a426d;display:flex;align-items:center;justify-content:space-between;padding:25px;position:relative;overflow:hidden}
-.ship{width:190px;height:220px;border-radius:45% 45% 18% 18%;display:flex;flex-direction:column;align-items:center;justify-content:center;
- font-weight:1000;border:4px solid;transition:.15s;position:relative}
-.ship:before,.ship:after{content:"";position:absolute;width:80px;height:22px;border-radius:50%;bottom:-13px;border:3px solid currentColor;background:inherit}
-.ship:before{left:-55px}.ship:after{right:-55px}
-.ship.green{background:#0c5d3d;border-color:#42ef9e;color:#42ef9e}.ship.gray{background:#454c5c;border-color:#cbd3e3;color:#cbd3e3}
+.alien-field{height:500px;border-radius:18px;background:radial-gradient(circle at 50% 15%,#172c58 0,transparent 30%),linear-gradient(180deg,#07162e,#07101f);
+ border:1px solid #2a426d;position:relative;overflow:hidden;padding:0;touch-action:none}
+.alien-field:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 38px,#ffffff08 39px 40px);pointer-events:none}
+.ship{position:absolute;bottom:18px;width:190px;height:118px;border-radius:50% 50% 28% 28%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ font-weight:1000;border:4px solid;transition:.15s;z-index:2;box-shadow:0 14px 35px #0008,inset 0 0 25px #fff1}
+.ship:before{content:"";position:absolute;top:20px;width:90px;height:36px;border-radius:50%;border:3px solid currentColor;background:#ffffff12}
+.ship:after{content:"";position:absolute;bottom:-14px;width:110px;height:22px;border-radius:0 0 50% 50%;background:currentColor;opacity:.25;filter:blur(2px)}
+.ship.green{left:22px;background:#0c5d3d;border-color:#42ef9e;color:#42ef9e}.ship.gray{right:22px;background:#454c5c;border-color:#cbd3e3;color:#cbd3e3}
 .ship:hover{transform:scale(1.04)}.ship.hit{animation:hit .35s}
-@keyframes hit{50%{transform:scale(1.13)}}
-.alien{position:absolute;width:82px;height:62px;border-radius:48% 48% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:34px;
- z-index:3;transition:left .35s linear;box-shadow:0 8px 25px #0008}
-.alien.green{background:#36e58d;color:#062719}.alien.gray{background:#aeb7c9;color:#1a1f29}
-.alien:after{content:"";position:absolute;bottom:-12px;width:65px;height:17px;background:inherit;border-radius:0 0 50% 50%}
+@keyframes hit{50%{transform:scale(1.1)}}
+.alien{position:absolute;width:82px;height:92px;display:flex;align-items:center;justify-content:center;z-index:3;
+ cursor:grab;user-select:none;touch-action:none;filter:drop-shadow(0 8px 12px #0009)}
+.alien.dragging{cursor:grabbing;filter:drop-shadow(0 12px 18px #000b) brightness(1.12);z-index:10}
+.alien img{width:100%;height:100%;object-fit:contain;pointer-events:none}
 .tris{display:grid;grid-template-columns:repeat(3,100px);grid-template-rows:repeat(3,100px);gap:7px;justify-content:center;margin:25px auto}
 .cell{border:1px solid #385484;background:#0a1730;border-radius:12px;font-size:55px;font-weight:1000;color:#fff;display:flex;align-items:center;justify-content:center}
 .cell:hover{background:#162b52}.cell.x{color:#ff4d70}.cell.o{color:#4d8dff}
@@ -82,7 +84,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 .pause-box{background:#101e39;border:1px solid #385587;border-radius:24px;padding:40px;text-align:center;box-shadow:0 25px 70px #0009}.pause-box h2{font-size:50px;margin:0 0 8px}
 .toast{position:fixed;right:20px;bottom:20px;z-index:120;padding:12px 15px;border-radius:12px;background:#12223f;border:1px solid #385484;box-shadow:0 12px 30px #0007;opacity:0;transform:translateY(15px);transition:.25s}
 .toast.show{opacity:1;transform:none}
-@media(max-width:800px){.hero{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.alien-field{height:300px;padding:10px}.ship{width:120px;height:160px}.tris{grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px)}}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.alien-field{height:430px;padding:0}.ship{width:135px;height:92px}.ship.green{left:10px}.ship.gray{right:10px}.alien{width:68px;height:76px}.tris{grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px)}}
 </style>
 </head>
 <body>
@@ -154,11 +156,11 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
     </div>
 
     <div id="alienGame" class="hidden">
-      <div class="notice center">Clicca sulla navicella <b>verde</b> o <b>grigia</b> corretta prima che l'alieno raggiunga il lato sbagliato.</div>
+      <div class="notice center">Trascina ogni alieno che arriva <b>dall'alto</b> nella navicella del suo colore. Se lo lasci andare nella navicella sbagliata perdi punti.</div>
       <div class="alien-field" id="alienField">
-        <button class="ship green" id="shipGreen" onclick="catchAlien('green')">VERDE</button>
+        <button class="ship green" id="shipGreen" data-color="green" type="button">VERDE</button>
         <div id="alienSpawn"></div>
-        <button class="ship gray" id="shipGray" onclick="catchAlien('gray')">GRIGIA</button>
+        <button class="ship gray" id="shipGray" data-color="gray" type="button">GRIGIA</button>
       </div>
       <div class="center message" id="alienMessage"></div>
       <div class="center"><button class="btn danger" onclick="startAlien()">Nuova partita</button></div>
@@ -252,9 +254,13 @@ function renderUno(){
     el.firstElementChild.onclick=()=>playUno(i);
     $("unoHand").appendChild(el);
   });
+  const drawBtn=document.querySelector('#unoGame .center .btn:not(.danger)');
+  drawBtn.disabled=canPlay;
+  drawBtn.title=canPlay?"Hai già una carta giocabile":"Non hai carte valide: pesca una carta";
   if(!canPlay){
-    $("unoMessage").textContent="Non hai carte valide: pesca automaticamente.";
-    setTimeout(()=>{if(currentGame==="uno"&&!hasPlayable()&&!unoMustDraw) unoDraw(true)},500);
+    $("unoMessage").textContent="Non hai carte valide: devi premere 'Pesca carta'.";
+  }else if(unoMustDraw){
+    $("unoMessage").textContent="Hai pescato una carta giocabile: ora puoi giocarla.";
   }else $("unoMessage").textContent=`Punteggio: ${unoScore} · scegli una carta evidenziata.`;
   $("gameStats").innerHTML=`<span class="stat">Punti ${unoScore}</span><span class="stat">Tua mano ${unoHand.length}</span><span class="stat">Mano bot ${unoBotHand.length}</span>`;
 }
@@ -271,12 +277,12 @@ function playUno(i){
     renderUno();
   },500);
 }
-function unoDraw(auto=false){
+function unoDraw(){
+  if(hasPlayable()){toast("Hai già una carta giocabile.");return}
   const c=makeCard();unoHand.push(c);unoMustDraw=true;
-  if(auto) toast("Nessuna carta valida: hai pescato.");
-  else toast("Carta pescata.");
+  toast("Carta pescata.");
   renderUno();
-  // Se la carta pescata è valida, il giocatore può giocarla; altrimenti il turno passa al bot.
+  // Se la carta pescata non è giocabile, il turno passa al bot.
   if(!(c.color===unoLast.color||c.n===unoLast.n)){
     setTimeout(()=>{
       if(currentGame!=="uno")return;
@@ -289,30 +295,79 @@ function unoDraw(auto=false){
 }
 
 /* ===== ALIEN ===== */
-let alienTimer=null,alienTimeout=null,alienCount=0,alienWave=1,aliensInWave=1,aliensDone=0,activeAlien=null,alienStart=0,alienDuration=3200;
-function clearAlien(){clearInterval(alienTimer);clearTimeout(alienTimeout)}
-function startAlien(){
-  clearAlien();alienCount=0;alienWave=1;aliensInWave=1;aliensDone=0;alienDuration=3200;
-  $("alienMessage").textContent="Preparati...";updateAlienStats();setTimeout(spawnAlien,500);
+let alienTimer=null,alienTimeout=null,alienCount=0,alienWave=1,aliensInWave=1,aliensDone=0,activeAlien=null,alienDuration=6500,alienDragging=false,alienX=0,alienY=0,alienOffsetX=0,alienOffsetY=0,alienLastTime=0;
+function clearAlien(){
+  clearTimeout(alienTimeout);
+  cancelAnimationFrame(alienTimer);
+  alienTimer=null;
+  alienDragging=false;
 }
-function updateAlienStats(){$("gameStats").innerHTML=`<span class="stat">Punti ${alienCount}</span><span class="stat">Wave ${alienWave}</span><span class="stat">Alieni ${aliensInWave}×</span>`}
+function startAlien(){
+  clearAlien();alienCount=0;alienWave=1;aliensInWave=1;aliensDone=0;alienDuration=6500;
+  $("alienSpawn").innerHTML="";$('alienMessage').textContent="Trascina gli alieni nelle navicelle giuste!";
+  updateAlienStats();setTimeout(spawnAlien,450);
+}
+function updateAlienStats(){
+  $("gameStats").innerHTML=`<span class="stat">Punti ${alienCount}</span><span class="stat">Wave ${alienWave}</span><span class="stat">Velocità ${Math.max(1,Math.round(6500/alienDuration))}×</span>`
+}
 function spawnAlien(){
   if(currentGame!=="alien"||paused)return;
-  const field=$("alienField");const old=$("alienSpawn").querySelector(".alien");if(old)old.remove();
+  clearTimeout(alienTimeout);cancelAnimationFrame(alienTimer);
+  const old=$("alienSpawn").querySelector(".alien");if(old)old.remove();
   activeAlien=Math.random()<.5?"green":"gray";
-  const a=document.createElement("div");a.className="alien "+activeAlien;a.textContent=activeAlien==="green"?"👽":"👾";
-  a.style.left="calc(50% - 41px)";a.style.top="calc(50% - 31px)";a.dataset.color=activeAlien;
-  $("alienSpawn").appendChild(a);alienStart=Date.now();
-  requestAnimationFrame(()=>{a.style.left=activeAlien==="green"?"36px":"calc(100% - 118px)"});
-  alienTimeout=setTimeout(()=>{if(a.parentNode){a.remove();alienCount=Math.max(0,alienCount-5);$("alienMessage").textContent="Troppo lento! -5";updateAlienStats();spawnAlien()}},alienDuration);
+  const a=document.createElement("div");a.className="alien "+activeAlien;a.dataset.color=activeAlien;
+  const img=document.createElement("img");img.src=activeAlien==="green"?"alien-green.svg":"alien-gray.svg";img.alt=activeAlien==="green"?"Alieno verde":"Alieno grigio";
+  a.appendChild(img);$("alienSpawn").appendChild(a);
+  const field=$("alienField");const maxX=field.clientWidth-a.offsetWidth;
+  alienX=(field.clientWidth-a.offsetWidth)/2;alienY=8;alienDragging=false;alienLastTime=performance.now();
+  a.style.left=alienX+"px";a.style.top=alienY+"px";
+  a.onpointerdown=(e)=>startAlienDrag(e,a);
+  alienTimer=requestAnimationFrame((t)=>fallAlien(t,a));
 }
-function catchAlien(color){
-  const a=$("alienSpawn").querySelector(".alien");if(!a)return;
-  if(color!==activeAlien){alienCount=Math.max(0,alienCount-3);$("alienMessage").textContent="Colore sbagliato! -3";return}
-  clearTimeout(alienTimeout);a.remove();alienCount++;aliensDone++;$("alienMessage").textContent="Catturato! +1";
-  $("ship"+(color==="green"?"Green":"Gray")).classList.add("hit");setTimeout(()=>$("ship"+(color==="green"?"Green":"Gray")).classList.remove("hit"),350);
-  if(aliensDone%10===0){alienWave++;aliensInWave*=2;alienDuration=Math.max(850,alienDuration*.78);toast(`Wave ${alienWave}: ${aliensInWave} alieni, più veloci!`)}
-  updateAlienStats();setTimeout(spawnAlien,120);
+function fallAlien(now,a){
+  if(!a.parentNode||currentGame!=="alien"||paused)return;
+  const dt=Math.min(40,now-alienLastTime);alienLastTime=now;
+  if(!alienDragging){
+    const field=$("alienField");
+    alienY+=dt*(field.clientHeight-130)/alienDuration;
+    a.style.top=alienY+"px";a.style.left=alienX+"px";
+    if(alienY+a.offsetHeight>=field.clientHeight-125){
+      a.remove();alienCount=Math.max(0,alienCount-5);$("alienMessage").textContent="È arrivato in fondo! -5";updateAlienStats();setTimeout(spawnAlien,350);return;
+    }
+  }
+  alienTimer=requestAnimationFrame((t)=>fallAlien(t,a));
+}
+function startAlienDrag(e,a){
+  if(!a.parentNode||paused)return;
+  alienDragging=true;a.classList.add("dragging");a.setPointerCapture(e.pointerId);
+  const r=a.getBoundingClientRect();alienOffsetX=e.clientX-r.left;alienOffsetY=e.clientY-r.top;
+  a.onpointermove=(ev)=>moveAlienDrag(ev,a);
+  a.onpointerup=(ev)=>finishAlienDrag(ev,a);
+  a.onpointercancel=(ev)=>finishAlienDrag(ev,a);
+}
+function moveAlienDrag(e,a){
+  if(!alienDragging)return;
+  const field=$("alienField").getBoundingClientRect();
+  alienX=Math.max(0,Math.min(field.width-a.offsetWidth,e.clientX-field.left-alienOffsetX));
+  alienY=Math.max(0,Math.min(field.height-a.offsetHeight,e.clientY-field.top-alienOffsetY));
+  a.style.left=alienX+"px";a.style.top=alienY+"px";
+}
+function finishAlienDrag(e,a){
+  if(!alienDragging||!a.parentNode)return;
+  alienDragging=false;a.classList.remove("dragging");
+  const ship=document.elementFromPoint(e.clientX,e.clientY)?.closest(".ship");
+  if(ship){
+    const color=ship.dataset.color;
+    if(color===activeAlien){
+      clearTimeout(alienTimeout);cancelAnimationFrame(alienTimer);a.remove();alienCount++;aliensDone++;
+      $("alienMessage").textContent="Perfetto! +1";ship.classList.add("hit");setTimeout(()=>ship.classList.remove("hit"),350);
+      if(aliensDone%10===0){alienWave++;aliensInWave*=2;alienDuration=Math.max(1700,alienDuration*.78);toast(`Wave ${alienWave}: più alieni e più veloci!`)}
+      updateAlienStats();setTimeout(spawnAlien,250);return;
+    }
+    alienCount=Math.max(0,alienCount-3);$("alienMessage").textContent="Navicella sbagliata! -3";updateAlienStats();
+  }
+  // Se sbaglia, l'alieno continua a cadere dal punto in cui è stato lasciato.
+  alienLastTime=performance.now();alienTimer=requestAnimationFrame((t)=>fallAlien(t,a));
 }
 
 /* ===== TRIS ===== */
@@ -338,7 +393,7 @@ function endTris(w){trisOver=true;renderTris();$("trisMessage").textContent=w===
 const words={
 nome:["alberto","anna","andrea","beatrice","carlo","davide","elena","fabio","gabriele","giulia","lorenzo","marco","matteo","nicola","paolo","riccardo","sara","simone","valerio","veronica"],
 cosa:["anello","armadio","astuccio","bicchiere","candela","cuscino","divano","elastico","forchetta","gomma","lampada","matita","orologio","penna","quaderno","sedia","tavolo","vaso","zaino"],
-citta:["ancona","bari","bologna","cagliari","firenze","genova","jesi","londra","milano","napoli","palermo","parigi","roma","siena","torino","venezia","verona"]
+citta:["ancona","arezzo","asti","bari","bergamo","bologna","brescia","cagliari","como","ferrara","firenze","genova","jesi","londra","mantova","milano","modena","napoli","padova","palermo","parigi","pisa","ravenna","reggio emilia","rimini","roma","rovigo","rovereto","siena","torino","trento","trieste","venezia","verona","vicenza"]
 };
 let catLetter="",catScore=0,catRound=0,catReady=false,catAnimating=false;
 function startCat(){catScore=0;catRound=0;catLetter="";catReady=false;$("letterBox").textContent="?";$("catMessage").textContent="Premi “Estrai lettera” per iniziare.";["catNome","catCosa","catCitta"].forEach(x=>$(x).value="");$("catSubmit").disabled=true;$("catLog").innerHTML="";updateCatStats()}
