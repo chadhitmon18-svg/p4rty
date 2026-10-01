@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p4rty — Mini Game Night</title>
+<style>
+:root{
+  --blue:#1769ff; --blue2:#0b2e78; --red:#ff3158; --red2:#9f1239;
+  --bg:#07101f; --panel:#0d1930; --panel2:#111f3c; --text:#f4f7ff;
+  --muted:#9eacd0; --green:#36e58d; --gray:#aeb7c9; --yellow:#ffd84d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:
+ radial-gradient(circle at 10% 10%,#153c86 0,transparent 28%),
+ radial-gradient(circle at 90% 20%,#7d1737 0,transparent 26%),var(--bg);color:var(--text);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer}
+.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+ position:sticky;top:0;z-index:50;background:rgba(5,11,23,.88);backdrop-filter:blur(14px);border-bottom:1px solid #23365c}
+.logo{font-weight:1000;font-size:30px;letter-spacing:-2px}.logo b{color:var(--red)}.logo span{color:var(--blue)}
+.top-actions{display:flex;gap:10px;align-items:center}
+.btn{border:1px solid #31518b;background:#16284c;color:#fff;border-radius:12px;padding:10px 15px;font-weight:800;transition:.18s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.15)}
+.btn.primary{background:linear-gradient(135deg,var(--blue),#5c8cff);border-color:#6e99ff}
+.btn.danger{background:linear-gradient(135deg,var(--red),#ff5877);border-color:#ff7690}
+.btn.small{padding:7px 11px;font-size:13px}
+#musicState{font-size:12px;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:28px 20px 60px}
+.hero{display:grid;grid-template-columns:1.5fr .8fr;gap:20px;align-items:stretch}
+.hero-card,.game-card,.game-screen{background:linear-gradient(145deg,rgba(18,33,65,.95),rgba(8,18,37,.96));
+ border:1px solid #263d69;border-radius:22px;box-shadow:0 18px 50px #0005}
+.hero-card{padding:30px}.hero h1{font-size:clamp(40px,7vw,78px);line-height:.88;margin:0 0 15px;letter-spacing:-5px}
+.hero h1 em{font-style:normal;color:var(--red)}.hero p{max-width:720px;color:#c1cbea;font-size:17px;line-height:1.55}
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+.game-card{padding:22px;min-height:190px;position:relative;overflow:hidden}
+.game-card:before{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-45px;top:-50px;background:var(--accent);opacity:.15}
+.game-card h3{font-size:24px;margin:0 0 8px}.game-card p{color:var(--muted);line-height:1.45}
+.game-card .tag{display:inline-block;padding:5px 9px;border-radius:99px;background:#ffffff10;color:#dfe7ff;font-size:12px;font-weight:800;margin-bottom:12px}
+.game-card .launch{margin-top:12px}
+#gameArea{display:none;margin-top:20px}.game-screen{padding:22px;min-height:560px}
+.game-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+.game-head h2{margin:0;font-size:30px}.stats{display:flex;gap:9px;flex-wrap:wrap}
+.stat{padding:8px 12px;background:#071226;border:1px solid #263b63;border-radius:10px;color:#cdd8f5;font-weight:800}
+.hidden{display:none!important}
+.center{text-align:center}
+.message{min-height:28px;color:#b9c6e7;font-weight:700;margin:10px}
+.notice{padding:12px 14px;border:1px solid #334d80;background:#0b1730;border-radius:12px;color:#c8d3ee;margin-bottom:14px}
+.board{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.card{width:82px;height:112px;border-radius:13px;border:3px solid #fff7;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ font-weight:1000;font-size:34px;box-shadow:0 8px 18px #0005;user-select:none;transition:.2s;position:relative}
+.card small{font-size:12px;text-transform:uppercase;letter-spacing:1px;position:absolute;top:7px;left:8px}
+.card.red{background:#e62e4f}.card.blue{background:#1769ff}.card.green{background:#15a765}.card.yellow{background:#e8b71d;color:#151515}
+.card.playable{outline:4px solid #fff;box-shadow:0 0 0 7px #36e58d66,0 0 25px #36e58d;transform:translateY(-9px)}
+.card.bot{animation:deal .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes deal{0%{opacity:0;transform:translateY(-80px) rotate(-8deg) scale(.7)}100%{opacity:1;transform:none}}
+.hand{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:25px 0}.bot-hand{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:10px 0 22px}.card.back{background:linear-gradient(135deg,#102e6d,#15204c);border-color:#7897d6;color:#fff;overflow:hidden}.card.back:before{content:"p4rty";font-size:15px;letter-spacing:2px;opacity:.9;border:2px solid #ffffff77;padding:20px 7px;border-radius:8px;transform:rotate(-8deg)}
+#unoCenter{display:flex;flex-direction:column;align-items:center;gap:12px}.last-card{min-height:120px}
+.alien-field{height:360px;border-radius:18px;background:linear-gradient(90deg,#071c15,#0a1020 48%,#171923);
+ border:1px solid #2a426d;display:flex;align-items:center;justify-content:space-between;padding:25px;position:relative;overflow:hidden}
+.ship{width:190px;height:220px;border-radius:45% 45% 18% 18%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ font-weight:1000;border:4px solid;transition:.15s;position:relative}
+.ship:before,.ship:after{content:"";position:absolute;width:80px;height:22px;border-radius:50%;bottom:-13px;border:3px solid currentColor;background:inherit}
+.ship:before{left:-55px}.ship:after{right:-55px}
+.ship.green{background:#0c5d3d;border-color:#42ef9e;color:#42ef9e}.ship.gray{background:#454c5c;border-color:#cbd3e3;color:#cbd3e3}
+.ship:hover{transform:scale(1.04)}.ship.hit{animation:hit .35s}
+@keyframes hit{50%{transform:scale(1.13)}}
+.alien{position:absolute;width:82px;height:62px;border-radius:48% 48% 40% 40%;display:flex;align-items:center;justify-content:center;font-size:34px;
+ z-index:3;transition:left .35s linear;box-shadow:0 8px 25px #0008}
+.alien.green{background:#36e58d;color:#062719}.alien.gray{background:#aeb7c9;color:#1a1f29}
+.alien:after{content:"";position:absolute;bottom:-12px;width:65px;height:17px;background:inherit;border-radius:0 0 50% 50%}
+.tris{display:grid;grid-template-columns:repeat(3,100px);grid-template-rows:repeat(3,100px);gap:7px;justify-content:center;margin:25px auto}
+.cell{border:1px solid #385484;background:#0a1730;border-radius:12px;font-size:55px;font-weight:1000;color:#fff;display:flex;align-items:center;justify-content:center}
+.cell:hover{background:#162b52}.cell.x{color:#ff4d70}.cell.o{color:#4d8dff}
+.cat-layout{max-width:900px;margin:auto}.letter-box{height:130px;border-radius:20px;border:2px solid #31518b;background:linear-gradient(135deg,#0b1d40,#291027);
+ display:flex;align-items:center;justify-content:center;font-size:72px;font-weight:1000;letter-spacing:-4px;margin-bottom:18px}
+.inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;color:#9faccc;font-size:13px;font-weight:800;margin-bottom:6px}
+.field input{width:100%;padding:12px;border-radius:10px;border:1px solid #334e7f;background:#071226;color:white;outline:none}
+.field input:focus{border-color:#5790ff;box-shadow:0 0 0 3px #1769ff22}
+.cat-log{margin-top:15px;max-height:160px;overflow:auto}.round-row{display:grid;grid-template-columns:60px 1fr 1fr 1fr 70px;gap:6px;padding:8px;border-bottom:1px solid #243858;font-size:13px}
+.pause{position:fixed;inset:0;background:#020712d9;backdrop-filter:blur(9px);z-index:100;display:flex;align-items:center;justify-content:center}
+.pause-box{background:#101e39;border:1px solid #385587;border-radius:24px;padding:40px;text-align:center;box-shadow:0 25px 70px #0009}.pause-box h2{font-size:50px;margin:0 0 8px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:120;padding:12px 15px;border-radius:12px;background:#12223f;border:1px solid #385484;box-shadow:0 12px 30px #0007;opacity:0;transform:translateY(15px);transition:.25s}
+.toast.show{opacity:1;transform:none}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.alien-field{height:300px;padding:10px}.ship{width:120px;height:160px}.tris{grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">p<span>4</span>rty<b>.</b></div>
+  <div class="top-actions">
+    <span id="musicState">♪ musica pronta</span>
+    <button class="btn small" id="musicBtn">Avvia musica</button>
+    <button class="btn small danger" id="pauseBtn">Ⅱ Pausa</button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="hero-card">
+    <div class="tag">GAME NIGHT · 4 GIOCHI</div>
+    <h1>p<span>4</span>rty<em>.</em></h1>
+    <p>Una raccolta di minigiochi da giocare direttamente nel browser: carte, alieni, tris e Nomi Cose Città. Tutto in una palette blu-rossa.</p>
+    <button class="btn primary" onclick="scrollToGames()">Scegli un gioco ↓</button>
+  </div>
+  <div class="hero-card">
+    <h3>Come funziona</h3>
+    <p style="color:var(--muted);line-height:1.6">Scegli una modalità. La musica parte dopo la prima interazione. <b>Pausa</b> ferma la musica e riproduce <code>pause.ogg</code>.</p>
+    <div class="notice">I punteggi sono locali: nessun account e nessun server.</div>
+  </div>
+</section>
+
+<section id="games" class="game-grid">
+  <article class="game-card" style="--accent:#ff3158">
+    <span class="tag">01 · CARTE</span><h3>Colore & Numero</h3>
+    <p>Il bot mette una carta. Puoi giocare le carte dello stesso colore oppure dello stesso numero: quelle valide vengono evidenziate.</p>
+    <button class="btn primary launch" onclick="openGame('uno')">Gioca</button>
+  </article>
+  <article class="game-card" style="--accent:#36e58d">
+    <span class="tag">02 · RIFLESSI</span><h3>Alien Colors</h3>
+    <p>Ogni alieno va nella navicella del suo colore. Ogni 10 alieni la quantità raddoppia e la velocità aumenta.</p>
+    <button class="btn primary launch" onclick="openGame('alien')">Gioca</button>
+  </article>
+  <article class="game-card" style="--accent:#1769ff">
+    <span class="tag">03 · CLASSICO</span><h3>Tris</h3>
+    <p>Gioca contro il bot. X e O, tre caselle in fila per vincere. Il bot cerca di bloccare le tue mosse.</p>
+    <button class="btn primary launch" onclick="openGame('tris')">Gioca</button>
+  </article>
+  <article class="game-card" style="--accent:#ff3158">
+    <span class="tag">04 · PAROLE</span><h3>Nomi Cose Città</h3>
+    <p>La lettera viene scelta con un'animazione. Inserisci una parola per categoria: le parole non riconosciute fanno perdere punti.</p>
+    <button class="btn primary launch" onclick="openGame('cat')">Gioca</button>
+  </article>
+</section>
+
+<section id="gameArea">
+  <div class="game-screen">
+    <div class="game-head">
+      <div><button class="btn small" onclick="closeGame()">← Giochi</button><h2 id="gameTitle" style="display:inline;margin-left:10px"></h2></div>
+      <div class="stats" id="gameStats"></div>
+    </div>
+
+    <div id="unoGame" class="hidden">
+      <div class="notice center">Regola: una carta è giocabile se ha <b>lo stesso colore</b> o <b>lo stesso numero</b> della carta del bot.</div>
+      <div id="unoCenter">
+        <div style="color:var(--muted)">Carte del bot</div>
+        <div class="bot-hand" id="unoBotHand"></div>
+        <div style="color:var(--muted)">Carta giocata</div>
+        <div class="last-card" id="unoLast"></div>
+        <div id="unoMessage" class="message"></div>
+      </div>
+      <div class="hand" id="unoHand"></div>
+      <div class="center"><button class="btn" onclick="unoDraw()">Pesca carta</button> <button class="btn danger" onclick="startUno()">Nuova partita</button></div>
+    </div>
+
+    <div id="alienGame" class="hidden">
+      <div class="notice center">Clicca sulla navicella <b>verde</b> o <b>grigia</b> corretta prima che l'alieno raggiunga il lato sbagliato.</div>
+      <div class="alien-field" id="alienField">
+        <button class="ship green" id="shipGreen" onclick="catchAlien('green')">VERDE</button>
+        <div id="alienSpawn"></div>
+        <button class="ship gray" id="shipGray" onclick="catchAlien('gray')">GRIGIA</button>
+      </div>
+      <div class="center message" id="alienMessage"></div>
+      <div class="center"><button class="btn danger" onclick="startAlien()">Nuova partita</button></div>
+    </div>
+
+    <div id="trisGame" class="hidden center">
+      <div class="notice">Sei <b>X</b>. Il bot è <b>O</b>. Fai tre simboli in fila.</div>
+      <div class="tris" id="trisBoard"></div>
+      <div class="message" id="trisMessage"></div>
+      <button class="btn danger" onclick="startTris()">Nuova partita</button>
+    </div>
+
+    <div id="catGame" class="hidden">
+      <div class="cat-layout">
+        <div class="letter-box" id="letterBox">?</div>
+        <div class="center message" id="catMessage">Premi “Estrai lettera” per iniziare.</div>
+        <div class="inputs">
+          <div class="field"><label>NOME</label><input id="catNome" autocomplete="off"></div>
+          <div class="field"><label>COSA</label><input id="catCosa" autocomplete="off"></div>
+          <div class="field"><label>CITTÀ</label><input id="catCitta" autocomplete="off"></div>
+        </div>
+        <div class="center" style="margin-top:15px"><button class="btn primary" id="catSubmit" onclick="submitCat()" disabled>Conferma risposte</button> <button class="btn" onclick="drawLetter()">Estrai lettera</button> <button class="btn danger" onclick="startCat()">Nuova partita</button></div>
+        <div class="cat-log" id="catLog"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="pause hidden" id="pauseOverlay">
+  <div class="pause-box"><h2>PAUSA</h2><p style="color:var(--muted)">La musica è stata fermata.</p><button class="btn primary" onclick="togglePause()">Riprendi</button></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<audio id="bgMusic" src="03 Rocket Jump Waltz.mp3" loop preload="auto"></audio>
+<audio id="pauseSound" src="pause.ogg" preload="auto"></audio>
+
+<script>
+const $=id=>document.getElementById(id);
+let currentGame=null, paused=false, musicStarted=false;
+const bg=$("bgMusic"), pauseSnd=$("pauseSound");
+
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
+function startMusic(){
+  bg.volume=.28;
+  bg.play().then(()=>{musicStarted=true;$("musicBtn").textContent="♫ musica attiva";$("musicState").textContent="♫ Rocket Jump Waltz"}).catch(()=>toast("Premi ancora per avviare la musica"));
+}
+$("musicBtn").onclick=()=>{ if(bg.paused) startMusic(); else {bg.pause();$("musicBtn").textContent="Avvia musica";$("musicState").textContent="♪ musica ferma"} };
+document.addEventListener("pointerdown",()=>{if(!musicStarted && bg.paused) startMusic()},{once:true});
+
+function togglePause(){
+  paused=!paused;
+  $("pauseOverlay").classList.toggle("hidden",!paused);
+  if(paused){bg.pause(); pauseSnd.currentTime=0; pauseSnd.play().catch(()=>{}); $("pauseBtn").textContent="▶ Riprendi";}
+  else {startMusic(); $("pauseBtn").textContent="Ⅱ Pausa";}
+}
+$("pauseBtn").onclick=togglePause;
+function scrollToGames(){$("games").scrollIntoView({behavior:"smooth"})}
+function openGame(g){
+  currentGame=g;$("gameArea").style.display="block";document.querySelectorAll("#gameArea>div:not(.game-screen)").forEach(()=>{});
+  ["unoGame","alienGame","trisGame","catGame"].forEach(x=>$(x).classList.add("hidden"));
+  $(g==="uno"?"unoGame":g==="alien"?"alienGame":g==="tris"?"trisGame":"catGame").classList.remove("hidden");
+  $("gameTitle").textContent={uno:"Colore & Numero",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città"}[g];
+  $("gameStats").innerHTML="";
+  $("gameArea").scrollIntoView({behavior:"smooth"});
+  if(g==="uno")startUno();if(g==="alien")startAlien();if(g==="tris")startTris();if(g==="cat")startCat();
+}
+function closeGame(){if(currentGame==="alien")clearAlien();currentGame=null;$("gameArea").style.display="none";scrollToGames()}
+
+/* ===== CARTE ===== */
+let unoHand=[],unoBotHand=[],unoLast,unoScore=0,unoTurn=0,unoMustDraw=false;
+const colors=["red","blue","green","yellow"];
+const colorNames={red:"rossa",blue:"blu",green:"verde",yellow:"gialla"};
+function makeCard(){return {color:colors[Math.floor(Math.random()*4)],n:Math.floor(Math.random()*10)}}
+function cardHTML(c,cls=""){return `<div class="card ${c.color} ${cls}"><small>${colorNames[c.color]}</small>${c.n}</div>`}
+function backCardHTML(){return `<div class="card back"></div>`}
+function hasPlayable(){return unoHand.some(c=>c.color===unoLast.color||c.n===unoLast.n)}
+function startUno(){
+  unoScore=0;unoTurn=0;unoHand=[];unoBotHand=[];
+  for(let i=0;i<7;i++){unoHand.push(makeCard());unoBotHand.push(makeCard())}
+  unoLast=makeCard();unoMustDraw=false;renderUno();
+}
+function renderUno(){
+  $("unoLast").innerHTML=cardHTML(unoLast,"bot");
+  $("unoBotHand").innerHTML=unoBotHand.map(()=>backCardHTML()).join("");
+  $("unoHand").innerHTML="";
+  const canPlay=hasPlayable();
+  unoHand.forEach((c,i)=>{
+    const el=document.createElement("div");const playable=c.color===unoLast.color||c.n===unoLast.n;
+    el.innerHTML=cardHTML(c,playable?"playable":"");
+    el.firstElementChild.onclick=()=>playUno(i);
+    $("unoHand").appendChild(el);
+  });
+  if(!canPlay){
+    $("unoMessage").textContent="Non hai carte valide: pesca automaticamente.";
+    setTimeout(()=>{if(currentGame==="uno"&&!hasPlayable()&&!unoMustDraw) unoDraw(true)},500);
+  }else $("unoMessage").textContent=`Punteggio: ${unoScore} · scegli una carta evidenziata.`;
+  $("gameStats").innerHTML=`<span class="stat">Punti ${unoScore}</span><span class="stat">Tua mano ${unoHand.length}</span><span class="stat">Mano bot ${unoBotHand.length}</span>`;
+}
+function playUno(i){
+  const c=unoHand[i];if(!(c.color===unoLast.color||c.n===unoLast.n)){toast("Questa carta non è giocabile.");return}
+  unoHand.splice(i,1);unoLast=c;unoScore+=10;unoTurn++;unoMustDraw=false;
+  renderUno();
+  setTimeout(()=>{
+    // Il bot gioca una carta compatibile se ne possiede una; altrimenti pesca.
+    let possible=unoBotHand.map((c,j)=>({c,j})).filter(x=>x.c.color===unoLast.color||x.c.n===unoLast.n);
+    if(possible.length){const pick=possible[Math.floor(Math.random()*possible.length)];unoLast=unoBotHand.splice(pick.j,1)[0]}
+    else unoBotHand.push(makeCard());
+    if(unoHand.length===0){unoScore+=50;toast("Hai finito le carte! +50");startUno();return}
+    renderUno();
+  },500);
+}
+function unoDraw(auto=false){
+  const c=makeCard();unoHand.push(c);unoMustDraw=true;
+  if(auto) toast("Nessuna carta valida: hai pescato.");
+  else toast("Carta pescata.");
+  renderUno();
+  // Se la carta pescata è valida, il giocatore può giocarla; altrimenti il turno passa al bot.
+  if(!(c.color===unoLast.color||c.n===unoLast.n)){
+    setTimeout(()=>{
+      if(currentGame!=="uno")return;
+      let possible=unoBotHand.map((c,j)=>({c,j})).filter(x=>x.c.color===unoLast.color||x.c.n===unoLast.n);
+      if(possible.length){const pick=possible[Math.floor(Math.random()*possible.length)];unoLast=unoBotHand.splice(pick.j,1)[0]}
+      else unoBotHand.push(makeCard());
+      unoMustDraw=false;renderUno();
+    },700);
+  }
+}
+
+/* ===== ALIEN ===== */
+let alienTimer=null,alienTimeout=null,alienCount=0,alienWave=1,aliensInWave=1,aliensDone=0,activeAlien=null,alienStart=0,alienDuration=3200;
+function clearAlien(){clearInterval(alienTimer);clearTimeout(alienTimeout)}
+function startAlien(){
+  clearAlien();alienCount=0;alienWave=1;aliensInWave=1;aliensDone=0;alienDuration=3200;
+  $("alienMessage").textContent="Preparati...";updateAlienStats();setTimeout(spawnAlien,500);
+}
+function updateAlienStats(){$("gameStats").innerHTML=`<span class="stat">Punti ${alienCount}</span><span class="stat">Wave ${alienWave}</span><span class="stat">Alieni ${aliensInWave}×</span>`}
+function spawnAlien(){
+  if(currentGame!=="alien"||paused)return;
+  const field=$("alienField");const old=$("alienSpawn").querySelector(".alien");if(old)old.remove();
+  activeAlien=Math.random()<.5?"green":"gray";
+  const a=document.createElement("div");a.className="alien "+activeAlien;a.textContent=activeAlien==="green"?"👽":"👾";
+  a.style.left="calc(50% - 41px)";a.style.top="calc(50% - 31px)";a.dataset.color=activeAlien;
+  $("alienSpawn").appendChild(a);alienStart=Date.now();
+  requestAnimationFrame(()=>{a.style.left=activeAlien==="green"?"36px":"calc(100% - 118px)"});
+  alienTimeout=setTimeout(()=>{if(a.parentNode){a.remove();alienCount=Math.max(0,alienCount-5);$("alienMessage").textContent="Troppo lento! -5";updateAlienStats();spawnAlien()}},alienDuration);
+}
+function catchAlien(color){
+  const a=$("alienSpawn").querySelector(".alien");if(!a)return;
+  if(color!==activeAlien){alienCount=Math.max(0,alienCount-3);$("alienMessage").textContent="Colore sbagliato! -3";return}
+  clearTimeout(alienTimeout);a.remove();alienCount++;aliensDone++;$("alienMessage").textContent="Catturato! +1";
+  $("ship"+(color==="green"?"Green":"Gray")).classList.add("hit");setTimeout(()=>$("ship"+(color==="green"?"Green":"Gray")).classList.remove("hit"),350);
+  if(aliensDone%10===0){alienWave++;aliensInWave*=2;alienDuration=Math.max(850,alienDuration*.78);toast(`Wave ${alienWave}: ${aliensInWave} alieni, più veloci!`)}
+  updateAlienStats();setTimeout(spawnAlien,120);
+}
+
+/* ===== TRIS ===== */
+let tris=[],trisOver=false;
+const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function startTris(){tris=Array(9).fill("");trisOver=false;renderTris();$("trisMessage").textContent="Tocca una casella per giocare."}
+function renderTris(){const b=$("trisBoard");b.innerHTML="";tris.forEach((v,i)=>{const c=document.createElement("button");c.className="cell "+(v?v.toLowerCase():"");c.textContent=v;c.onclick=()=>trisMove(i);c.disabled=!!v||trisOver;b.appendChild(c)});$("gameStats").innerHTML=`<span class="stat">X = tu</span><span class="stat">O = bot</span>`}
+function winner(arr){for(const w of wins)if(arr[w[0]]&&arr[w[0]]===arr[w[1]]&&arr[w1=w[2]]===arr[w[0]])return arr[w[0]];if(arr.every(Boolean))return "draw";return ""}
+function trisMove(i){
+  if(tris[i]||trisOver)return;tris[i]="X";renderTris();let w=winner(tris);if(w){endTris(w);return}
+  $("trisMessage").textContent="Il bot sta pensando...";setTimeout(()=>{if(trisOver)return;const m=bestBotMove();tris[m]="O";renderTris();w=winner(tris);if(w)endTris(w);else $("trisMessage").textContent="Tocca a te."},350)
+}
+function bestBotMove(){
+  const empty=tris.map((v,i)=>v?null:i).filter(v=>v!==null);
+  for(const p of ["O","X"]){for(const i of empty){tris[i]=p;if(winner(tris)===p){tris[i]="";return i}tris[i]="";}}
+  if(empty.includes(4))return 4;
+  const corners=empty.filter(i=>[0,2,6,8].includes(i));if(corners.length)return corners[Math.floor(Math.random()*corners.length)];
+  return empty[Math.floor(Math.random()*empty.length)];
+}
+function endTris(w){trisOver=true;renderTris();$("trisMessage").textContent=w==="X"?"Hai vinto!":w==="O"?"Ha vinto il bot.":"Pareggio."}
+
+/* ===== NOMI COSE CITTÀ ===== */
+const words={
+nome:["alberto","anna","andrea","beatrice","carlo","davide","elena","fabio","gabriele","giulia","lorenzo","marco","matteo","nicola","paolo","riccardo","sara","simone","valerio","veronica"],
+cosa:["anello","armadio","astuccio","bicchiere","candela","cuscino","divano","elastico","forchetta","gomma","lampada","matita","orologio","penna","quaderno","sedia","tavolo","vaso","zaino"],
+citta:["ancona","bari","bologna","cagliari","firenze","genova","jesi","londra","milano","napoli","palermo","parigi","roma","siena","torino","venezia","verona"]
+};
+let catLetter="",catScore=0,catRound=0,catReady=false,catAnimating=false;
+function startCat(){catScore=0;catRound=0;catLetter="";catReady=false;$("letterBox").textContent="?";$("catMessage").textContent="Premi “Estrai lettera” per iniziare.";["catNome","catCosa","catCitta"].forEach(x=>$(x).value="");$("catSubmit").disabled=true;$("catLog").innerHTML="";updateCatStats()}
+function updateCatStats(){$("gameStats").innerHTML=`<span class="stat">Punti ${catScore}</span><span class="stat">Round ${catRound}</span>`}
+function drawLetter(){
+  if(catAnimating)return;catAnimating=true;catReady=false;$("catSubmit").disabled=true;
+  const letters="ABCDEFGHILMNOPQRSTUVZ";let n=0,steps=0;
+  const iv=setInterval(()=>{const l=letters[Math.floor(Math.random()*letters.length)];$("letterBox").textContent=l;steps++;if(steps>22){clearInterval(iv);catLetter=letters[Math.floor(Math.random()*letters.length)];$("letterBox").textContent=catLetter;catAnimating=false;catReady=true;$("catSubmit").disabled=false;$("catMessage").textContent=`Lettera: ${catLetter}. Hai una risposta per ogni categoria.`}},55)
+}
+function submitCat(){
+  if(!catReady)return;let vals=[$("catNome").value.trim().toLowerCase(),$("catCosa").value.trim().toLowerCase(),$("catCitta").value.trim().toLowerCase()];
+  let cats=["nome","cosa","citta"],points=0,row=[];
+  vals.forEach((v,i)=>{const ok=v && v[0].toUpperCase()===catLetter && words[cats[i]].includes(v);if(ok){points+=10;row.push(v+" +10")}else{points-=5;row.push((v||"—")+" -5")}});
+  catScore+=points;catRound++;catReady=false;$("catSubmit").disabled=true;
+  const div=document.createElement("div");div.className="round-row";div.innerHTML=`<b>${catLetter}</b>${row.map(x=>`<span>${x}</span>`).join("")}<b>${points>0?"+":""}${points}</b>`;$("catLog").prepend(div);
+  $("catMessage").textContent=points>=0?`Round concluso: ${points>=0?"+":""}${points} punti.`:"C'erano delle cavolate: -5 per risposta non valida.";
+  updateCatStats();setTimeout(drawLetter,600);["catNome","catCosa","catCitta"].forEach(x=>$(x).value="");
+}
+</script>
+</body>
+</html>
