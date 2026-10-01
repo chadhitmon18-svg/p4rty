@@ -223,7 +223,7 @@ function openGame(g){
   currentGame=g;$("gameArea").style.display="block";document.querySelectorAll("#gameArea>div:not(.game-screen)").forEach(()=>{});
   ["unoGame","alienGame","trisGame","catGame"].forEach(x=>$(x).classList.add("hidden"));
   $(g==="uno"?"unoGame":g==="alien"?"alienGame":g==="tris"?"trisGame":"catGame").classList.remove("hidden");
-  $("gameTitle").textContent={uno:"Colore & Numero",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città"}[g];
+  $("gameTitle").textContent={uno:"UNO!",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città"}[g];
   $("gameStats").innerHTML="";
   $("gameArea").scrollIntoView({behavior:"smooth"});
   if(g==="uno")startUno();if(g==="alien")startAlien();if(g==="tris")startTris();if(g==="cat")startCat();
