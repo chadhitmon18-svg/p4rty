@@ -51,7 +51,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 .card{width:82px;height:112px;border-radius:13px;border:3px solid #fff7;display:flex;flex-direction:column;align-items:center;justify-content:center;
  font-weight:1000;font-size:34px;box-shadow:0 8px 18px #0005;user-select:none;transition:.2s;position:relative}
 .card small{font-size:12px;text-transform:uppercase;letter-spacing:1px;position:absolute;top:7px;left:8px}
-.card.red{background:#e62e4f}.card.blue{background:#1769ff}.card.green{background:#15a765}.card.yellow{background:#e8b71d;color:#151515}
+.card.wild{background:linear-gradient(135deg,#e62e4f 0 25%,#e8b71d 25% 50%,#15a765 50% 75%,#1769ff 75%)}.card.red{background:#e62e4f}.card.blue{background:#1769ff}.card.green{background:#15a765}.card.yellow{background:#e8b71d;color:#151515}
 .card.playable{outline:4px solid #fff;box-shadow:0 0 0 7px #36e58d66,0 0 25px #36e58d;transform:translateY(-9px)}
 .card.bot{animation:deal .55s cubic-bezier(.2,.8,.2,1)}
 @keyframes deal{0%{opacity:0;transform:translateY(-80px) rotate(-8deg) scale(.7)}100%{opacity:1;transform:none}}
@@ -114,7 +114,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 
 <section id="games" class="game-grid">
   <article class="game-card" style="--accent:#ff3158">
-    <span class="tag">01 · CARTE</span><h3>UNO!</h3>
+    <span class="tag">01 · CARTE</span><h3>Colore & Numero</h3>
     <p>Il bot mette una carta. Puoi giocare le carte dello stesso colore oppure dello stesso numero: quelle valide vengono evidenziate.</p>
     <button class="btn primary launch" onclick="openGame('uno')">Gioca</button>
   </article>
@@ -152,7 +152,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
         <div id="unoMessage" class="message"></div>
       </div>
       <div class="hand" id="unoHand"></div>
-      <div class="center"><button class="btn" onclick="unoDraw()">Pesca carta</button> <button class="btn danger" onclick="startUno()">Nuova partita</button></div>
+      <div class="center"><button class="btn" onclick="unoDraw()">Pesca carta</button> <button class="btn" id="unoPass" onclick="unoPass()" disabled>Passa turno</button> <button class="btn danger" onclick="startUno()">Nuova partita</button></div>
     </div>
 
     <div id="alienGame" class="hidden">
@@ -230,67 +230,141 @@ function openGame(g){
 }
 function closeGame(){if(currentGame==="alien")clearAlien();currentGame=null;$("gameArea").style.display="none";scrollToGames()}
 
-/* ===== CARTE ===== */
-let unoHand=[],unoBotHand=[],unoLast,unoScore=0,unoTurn=0,unoMustDraw=false;
+/* ===== CARTE / UNO ===== */
+let unoHand=[],unoBotHand=[],unoLast,unoScore=0,unoTurn=0,unoMustDraw=false,unoCurrentColor="",unoGameOver=false;
 const colors=["red","blue","green","yellow"];
 const colorNames={red:"rossa",blue:"blu",green:"verde",yellow:"gialla"};
-function makeCard(){return {color:colors[Math.floor(Math.random()*4)],n:Math.floor(Math.random()*10)}}
-function cardHTML(c,cls=""){return `<div class="card ${c.color} ${cls}"><small>${colorNames[c.color]}</small>${c.n}</div>`}
+const symbols=["+2","reverse","skip","wild","wild4"];
+function makeCard(){
+  const r=Math.random();
+  if(r<.14)return {color:colors[Math.floor(Math.random()*4)],type:"+2",n:null};
+  if(r<.23)return {color:colors[Math.floor(Math.random()*4)],type:"reverse",n:null};
+  if(r<.32)return {color:colors[Math.floor(Math.random()*4)],type:"skip",n:null};
+  if(r<.38)return {color:null,type:"wild",n:null};
+  if(r<.43)return {color:null,type:"wild4",n:null};
+  return {color:colors[Math.floor(Math.random()*4)],type:"number",n:Math.floor(Math.random()*10)};
+}
+function cardLabel(c){
+  if(c.type==="number")return c.n;
+  if(c.type==="+2")return "+2";
+  if(c.type==="reverse")return "↔";
+  if(c.type==="skip")return "⊘";
+  if(c.type==="wild")return "JOLLY";
+  return "+4";
+}
+function cardHTML(c,cls=""){
+  const colorClass=c.color||"wild";
+  return `<div class="card ${colorClass} ${cls}"><small>${c.type==="number"?colorNames[c.color]:c.type}</small>${cardLabel(c)}</div>`;
+}
 function backCardHTML(){return `<div class="card back"></div>`}
-function hasPlayable(){return unoHand.some(c=>c.color===unoLast.color||c.n===unoLast.n)}
+function isPlayable(c){
+  if(c.type==="wild")return true;
+  if(c.type==="wild4")return !unoHand.some(x=>x.color===unoCurrentColor);
+  if(c.color===unoCurrentColor)return true;
+  if(c.type!=="number"&&c.type===unoLast.type)return true;
+  if(c.type==="number"&&unoLast.type==="number"&&c.n===unoLast.n)return true;
+  return false;
+}
+function hasPlayable(){return unoHand.some(isPlayable)}
 function startUno(){
-  unoScore=0;unoTurn=0;unoHand=[];unoBotHand=[];
+  unoScore=0;unoTurn=0;unoHand=[];unoBotHand=[];unoGameOver=false;unoMustDraw=false;
   for(let i=0;i<7;i++){unoHand.push(makeCard());unoBotHand.push(makeCard())}
-  unoLast=makeCard();unoMustDraw=false;renderUno();
+  do{unoLast=makeCard()}while(unoLast.type==="wild4"||unoLast.type==="wild");
+  unoCurrentColor=unoLast.color;renderUno();
 }
 function renderUno(){
+  if(unoGameOver)return;
   $("unoLast").innerHTML=cardHTML(unoLast,"bot");
   $("unoBotHand").innerHTML=unoBotHand.map(()=>backCardHTML()).join("");
   $("unoHand").innerHTML="";
-  const canPlay=hasPlayable();
   unoHand.forEach((c,i)=>{
-    const el=document.createElement("div");const playable=c.color===unoLast.color||c.n===unoLast.n;
+    const el=document.createElement("div");const playable=isPlayable(c);
     el.innerHTML=cardHTML(c,playable?"playable":"");
     el.firstElementChild.onclick=()=>playUno(i);
     $("unoHand").appendChild(el);
   });
-  const drawBtn=document.querySelector('#unoGame .center .btn:not(.danger)');
-  drawBtn.disabled=canPlay;
-  drawBtn.title=canPlay?"Hai già una carta giocabile":"Non hai carte valide: pesca una carta";
-  if(!canPlay){
-    $("unoMessage").textContent="Non hai carte valide: devi premere 'Pesca carta'.";
-  }else if(unoMustDraw){
-    $("unoMessage").textContent="Hai pescato una carta giocabile: ora puoi giocarla.";
-  }else $("unoMessage").textContent=`Punteggio: ${unoScore} · scegli una carta evidenziata.`;
+  const drawBtn=document.querySelector('#unoGame .center .btn:not(.danger):not(#unoPass)');
+  const passBtn=$("unoPass");
+  const canPlay=hasPlayable();
+  drawBtn.disabled=canPlay||unoMustDraw;
+  passBtn.disabled=!unoMustDraw;
+  drawBtn.title=canPlay?"Hai già una carta giocabile":"Pesca una carta";
+  if(unoMustDraw)$('unoMessage').textContent="La carta pescata è giocabile: puoi giocarla oppure passare il turno.";
+  else if(!canPlay)$('unoMessage').textContent="Non hai carte valide: devi premere 'Pesca carta'.";
+  else $('unoMessage').textContent=`Punti ${unoScore} · Colore: ${colorNames[unoCurrentColor]}`;
   $("gameStats").innerHTML=`<span class="stat">Punti ${unoScore}</span><span class="stat">Tua mano ${unoHand.length}</span><span class="stat">Mano bot ${unoBotHand.length}</span>`;
 }
+function chooseWildColor(){
+  let x=prompt("Scegli il colore: rosso, blu, verde o giallo");
+  if(!x)return null;x=x.trim().toLowerCase();
+  const map={rosso:"red",rossa:"red",blu:"blue",blue:"blue",verde:"green",giallo:"yellow",gialla:"yellow"};
+  return map[x]||null;
+}
+function applyUnoEffect(c,player){
+  if(c.type==="wild"||c.type==="wild4"){
+    let col=player?chooseWildColor():colors[Math.floor(Math.random()*4)];
+    if(!col){toast("Colore non valido: carta non giocata.");return false}
+    unoCurrentColor=col;
+  }else unoCurrentColor=c.color;
+  return true;
+}
+function finishUno(who){
+  unoGameOver=true;
+  const overlay=document.createElement("div");overlay.className="pause";overlay.id="unoEndOverlay";
+  overlay.innerHTML=`<div class="pause-box"><h2>${who==="player"?"HAI VINTO!":"HAI PERSO!"}</h2><p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p><button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();startUno()">Nuova partita</button></div>`;
+  document.body.appendChild(overlay);
+}
 function playUno(i){
-  const c=unoHand[i];if(!(c.color===unoLast.color||c.n===unoLast.n)){toast("Questa carta non è giocabile.");return}
-  unoHand.splice(i,1);unoLast=c;unoScore+=10;unoTurn++;unoMustDraw=false;
-  renderUno();
-  setTimeout(()=>{
-    // Il bot gioca una carta compatibile se ne possiede una; altrimenti pesca.
-    let possible=unoBotHand.map((c,j)=>({c,j})).filter(x=>x.c.color===unoLast.color||x.c.n===unoLast.n);
-    if(possible.length){const pick=possible[Math.floor(Math.random()*possible.length)];unoLast=unoBotHand.splice(pick.j,1)[0]}
-    else unoBotHand.push(makeCard());
-    if(unoHand.length===0){unoScore+=50;toast("Hai finito le carte! +50");startUno();return}
-    renderUno();
-  },500);
+  if(unoGameOver)return;
+  const c=unoHand[i];
+  if(!isPlayable(c)){toast("Questa carta non è giocabile.");return}
+  if(c.type==="wild"||c.type==="wild4"){
+    const col=chooseWildColor();if(!col)return;
+    if(c.type==="wild4"&&!unoHand.every((x,j)=>j===i||x.color!==unoCurrentColor)){toast("Il +4 può essere giocato solo se non hai carte del colore corrente.");return}
+    unoCurrentColor=col;
+  }else unoCurrentColor=c.color;
+  unoHand.splice(i,1);unoLast=c;unoScore+=10;unoMustDraw=false;
+  if(unoHand.length===0){finishUno("player");return}
+  if(c.type==="+2"){
+    unoBotHand.push(makeCard(),makeCard());renderUno();return;
+  }
+  if(c.type==="wild4"){
+    unoBotHand.push(makeCard(),makeCard(),makeCard(),makeCard());renderUno();return;
+  }
+  if(c.type==="skip"||c.type==="reverse"){
+    renderUno();return;
+  }
+  renderUno();setTimeout(botTurn,500);
+}
+function unoPass(){
+  if(unoGameOver||!unoMustDraw)return;
+  unoMustDraw=false;renderUno();setTimeout(botTurn,400);
+}
+function botTurn(){
+  if(unoGameOver||currentGame!=="uno")return;
+  let possible=unoBotHand.map((c,j)=>({c,j})).filter(x=>{
+    if(x.c.type==="wild4")return !unoBotHand.some(y=>y.color===unoCurrentColor);
+    return x.c.type==="wild"||x.c.color===unoCurrentColor||(x.c.type==="number"&&unoLast.type==="number"&&x.c.n===unoLast.n)||(x.c.type!=="number"&&x.c.type===unoLast.type);
+  });
+  if(!possible.length){unoBotHand.push(makeCard());renderUno();setTimeout(botTurn,500);return}
+  const pick=possible[Math.floor(Math.random()*possible.length)].j;
+  const c=unoBotHand.splice(pick,1)[0];unoLast=c;applyUnoEffect(c,false);renderUno();
+  if(unoBotHand.length===0){finishUno("bot");return}
+  if(c.type==="+2")for(let i=0;i<2;i++)unoHand.push(makeCard());
+  else if(c.type==="wild4")for(let i=0;i<4;i++)unoHand.push(makeCard());
+  if(c.type==="+2"||c.type==="skip"||c.type==="reverse"||c.type==="wild4"){
+    unoMustDraw=false;renderUno();
+  }else renderUno();
 }
 function unoDraw(){
+  if(unoGameOver||unoMustDraw)return;
   if(hasPlayable()){toast("Hai già una carta giocabile.");return}
-  const c=makeCard();unoHand.push(c);unoMustDraw=true;
-  toast("Carta pescata.");
-  renderUno();
-  // Se la carta pescata non è giocabile, il turno passa al bot.
-  if(!(c.color===unoLast.color||c.n===unoLast.n)){
-    setTimeout(()=>{
-      if(currentGame!=="uno")return;
-      let possible=unoBotHand.map((c,j)=>({c,j})).filter(x=>x.c.color===unoLast.color||x.c.n===unoLast.n);
-      if(possible.length){const pick=possible[Math.floor(Math.random()*possible.length)];unoLast=unoBotHand.splice(pick.j,1)[0]}
-      else unoBotHand.push(makeCard());
-      unoMustDraw=false;renderUno();
-    },700);
+  const c=makeCard();unoHand.push(c);unoMustDraw=true;toast("Carta pescata.");renderUno();
+  if(isPlayable(c)){
+    $("unoMessage").textContent="La carta pescata è giocabile: puoi giocarla subito.";
+    const drawBtn=document.querySelector('#unoGame .center .btn:not(.danger)');drawBtn.disabled=true;
+  }else{
+    unoMustDraw=false;renderUno();setTimeout(botTurn,600);
   }
 }
 
@@ -355,7 +429,12 @@ function moveAlienDrag(e,a){
 function finishAlienDrag(e,a){
   if(!alienDragging||!a.parentNode)return;
   alienDragging=false;a.classList.remove("dragging");
-  const ship=document.elementFromPoint(e.clientX,e.clientY)?.closest(".ship");
+  const ships=[...document.querySelectorAll("#alienField .ship")];
+  const alienRect=a.getBoundingClientRect();
+  const ship=ships.find(sh=>{
+    const r=sh.getBoundingClientRect();
+    return alienRect.right>r.left && alienRect.left<r.right && alienRect.bottom>r.top && alienRect.top<r.bottom;
+  });
   if(ship){
     const color=ship.dataset.color;
     if(color===activeAlien){
