@@ -33,12 +33,21 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
  border:1px solid #263d69;border-radius:22px;box-shadow:0 18px 50px #0005}
 .hero-card{padding:30px}.hero h1{font-size:clamp(40px,7vw,78px);line-height:.88;margin:0 0 15px;letter-spacing:-5px}
 .hero h1 em{font-style:normal;color:var(--red)}.hero p{max-width:720px;color:#c1cbea;font-size:17px;line-height:1.55}
-.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
-.game-card{padding:22px;min-height:190px;position:relative;overflow:hidden}
-.game-card:before{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-45px;top:-50px;background:var(--accent);opacity:.15}
-.game-card h3{font-size:24px;margin:0 0 8px}.game-card p{color:var(--muted);line-height:1.45}
-.game-card .tag{display:inline-block;padding:5px 9px;border-radius:99px;background:#ffffff10;color:#dfe7ff;font-size:12px;font-weight:800;margin-bottom:12px}
-.game-card .launch{margin-top:12px}
+/* STILE CABINATI ARCADE */
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:30px}
+.arcade-cabinet{background:linear-gradient(180deg,#142444 0%,#091122 100%);border:3px solid #263d69;border-radius:24px;padding:16px;box-shadow:0 20px 40px rgba(0,0,0,0.6),inset 0 0 15px rgba(255,255,255,0.05);position:relative;display:flex;flex-direction:column;align-items:center;transition:transform .2s, border-color .2s}
+.arcade-cabinet:hover{transform:translateY(-4px);border-color:var(--accent)}
+.arcade-marquee{background:#040812;border:2px solid var(--accent);border-radius:10px;width:100%;text-align:center;padding:10px;box-shadow:0 0 15px var(--accent)44;margin-bottom:12px}
+.arcade-marquee h3{margin:0;font-size:22px;letter-spacing:2px;color:#fff;text-shadow:0 0 8px var(--accent)}
+.arcade-marquee .tag{font-size:11px;font-weight:900;color:var(--accent);letter-spacing:1px;display:block;margin-bottom:2px}
+.arcade-screen{width:100%;height:140px;background:#030712;border:2px solid #1f3359;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:12px;box-shadow:inset 0 0 20px rgba(0,0,0,0.8)}
+.arcade-screen p{color:var(--muted);font-size:13px;padding:0 15px;text-align:center;line-height:1.4;margin:0}
+.arcade-screen::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.25) 50%);background-size:100% 4px;pointer-events:none}
+.arcade-controls{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 5px}
+.arcade-joystick{width:24px;height:24px;background:radial-gradient(circle at 30% 30%,#ff5877,#9f1239);border-radius:50%;box-shadow:0 4px 8px #0008;border:2px solid #fff4}
+.arcade-buttons{display:flex;gap:6px}
+.arcade-btn-dot{width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 2px 5px #0008;border:1px solid #fff4}
+.arcade-launch{width:100%;margin-top:10px}
 #gameArea{display:none;margin-top:20px}.game-screen{padding:22px;min-height:560px}
 .game-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
 .game-head h2{margin:0;font-size:30px}.stats{display:flex;gap:9px;flex-wrap:wrap}
@@ -120,29 +129,85 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
   </div>
 </section>
 
+<!-- SEZIONE CABINATI ARCADE -->
 <section id="games" class="game-grid">
-  <article class="game-card" style="--accent:#ff3158">
-    <span class="tag">01 · CARTE</span><h3>UNO!</h3>
-    <p>Il bot mette una carta. Puoi giocare le carte dello stesso colore oppure dello stesso numero: quelle valide vengono evidenziate.</p>
-    <button class="btn primary launch" onclick="openGame('uno')">Gioca</button>
-  </article>
-  <article class="game-card" style="--accent:#36e58d">
-    <span class="tag">02 · RIFLESSI</span><h3>Alien Colors</h3>
-    <p>Ogni alieno va nella navicella del suo colore. Ogni 10 alieni la quantità raddoppia e la velocità aumenta.</p>
-    <button class="btn primary launch" onclick="openGame('alien')">Gioca</button>
-  </article>
-  <article class="game-card" style="--accent:#1769ff">
-    <span class="tag">03 · CLASSICO</span><h3>Tris</h3>
-    <p>Gioca contro il bot. X e O, tre caselle in fila per vincere. Il bot cerca di bloccare le tue mosse.</p>
-    <button class="btn primary launch" onclick="openGame('tris')">Gioca</button>
-  </article>
-  <article class="game-card" style="--accent:#ff3158">
-    <span class="tag">04 · PAROLE</span><h3>Nomi Cose Città</h3>
-    <p>Una lettera viene estratta in modo casuale. Inserisci una parola per categoria: le parole non riconosciute fanno perdere punti.</p>
-    <button class="btn primary launch" onclick="openGame('cat')">Gioca</button>
-  </article>
-</section>
+  <!-- CABINATO 1: UNO! -->
+  <div class="arcade-cabinet" style="--accent:#ff3158">
+    <div class="arcade-marquee">
+      <span class="tag">01 · CARTE</span>
+      <h3>UNO!</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Il bot mette una carta. Puoi giocare quelle dello stesso colore o numero.</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('uno')">GIOCA</button>
+  </div>
 
+  <!-- CABINATO 2: ALIEN COLORS -->
+  <div class="arcade-cabinet" style="--accent:#36e58d">
+    <div class="arcade-marquee">
+      <span class="tag">02 · RIFLESSI</span>
+      <h3>Alien Colors</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Ogni alieno va nella navicella del suo colore. Velocità in aumento!</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('alien')">GIOCA</button>
+  </div>
+
+  <!-- CABINATO 3: TRIS -->
+  <div class="arcade-cabinet" style="--accent:#1769ff">
+    <div class="arcade-marquee">
+      <span class="tag">03 · CLASSICO</span>
+      <h3>Tris</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Gioca contro il bot a X e O. Tre caselle in fila per vincere.</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('tris')">GIOCA</button>
+  </div>
+
+  <!-- CABINATO 4: NOMI COSE CITTÀ -->
+  <div class="arcade-cabinet" style="--accent:#ff3158">
+    <div class="arcade-marquee">
+      <span class="tag">04 · PAROLE</span>
+      <h3>Nomi Cose Città</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Estrai una lettera casuale e inserisci una parola per categoria.</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('cat')">GIOCA</button>
+  </div>
+</section>
+  
 <section id="gameArea">
   <div class="game-screen">
     <div class="game-head">
