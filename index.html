@@ -57,6 +57,14 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 @keyframes deal{0%{opacity:0;transform:translateY(-80px) rotate(-8deg) scale(.7)}100%{opacity:1;transform:none}}
 .hand{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:25px 0}.bot-hand{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:10px 0 22px}.card.back{background:linear-gradient(135deg,#102e6d,#15204c);border-color:#7897d6;color:#fff;overflow:hidden}.card.back:before{content:"p4rty";font-size:15px;letter-spacing:2px;opacity:.9;border:2px solid #ffffff77;padding:20px 7px;border-radius:8px;transform:rotate(-8deg)}
 #unoCenter{display:flex;flex-direction:column;align-items:center;gap:12px}.last-card{min-height:120px}
+/* Sfondo panno verde da poker per il gioco di Uno */
+#unoGame.poker-bg {
+  background: radial-gradient(circle at center, #1b5e20 0%, #0d3b11 100%);
+  border: 4px solid #2e7d32;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.6);
+}
 .alien-field{height:500px;border-radius:18px;background:radial-gradient(circle at 50% 15%,#172c58 0,transparent 30%),linear-gradient(180deg,#07162e,#07101f);
  border:1px solid #2a426d;position:relative;overflow:hidden;padding:0;touch-action:none}
 .alien-field:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 38px,#ffffff08 39px 40px);pointer-events:none}
@@ -270,13 +278,15 @@ function scrollToGames(){$("games").scrollIntoView({behavior:"smooth"})}
 function openGame(g){
   currentGame=g;$("gameArea").style.display="block";document.querySelectorAll("#gameArea>div:not(.game-screen)").forEach(()=>{});
   ["unoGame","alienGame","trisGame","catGame"].forEach(x=>$(x).classList.add("hidden"));
+  $("unoGame").classList.remove("poker-bg");
   $(g==="uno"?"unoGame":g==="alien"?"alienGame":g==="tris"?"trisGame":"catGame").classList.remove("hidden");
+  if(g==="uno") $("unoGame").classList.add("poker-bg");
   $("gameTitle").textContent={uno:"UNO!",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città"}[g];
   $("gameStats").innerHTML="";
   $("gameArea").scrollIntoView({behavior:"smooth"});
   if(g==="uno")startUno();if(g==="alien")startAlien();if(g==="tris")startTris();if(g==="cat")startCat();
 }
-function closeGame(){if(currentGame==="alien")clearAlien();currentGame=null;$("gameArea").style.display="none";scrollToGames()}
+function closeGame(){if(currentGame==="alien")clearAlien();currentGame=null;$("gameArea").style.display="none";$("unoGame").classList.remove("poker-bg");scrollToGames()}
 
 /* ===== CARTE / UNO ===== */
 let unoHand=[],unoBotHand=[],unoLast,unoScore=0,unoTurn=0,unoMustDraw=false,unoCurrentColor="",unoGameOver=false;
