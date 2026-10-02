@@ -205,15 +205,16 @@ function $(id){
 }
   
 const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound");
-let currentGame=null, paused=false, musicStarted=false;
-let currentTrack="rocket";
+let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
   
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
   
 function startMusic(){
 const track=currentTrack==="rocket" ? bg : mule;  
+  
 bg.volume=.28;
 mule.volume=.28;
+  
 track.play().then(()=>{
     musicStarted=true;
 
@@ -228,10 +229,9 @@ track.play().then(()=>{
     toast("Premi ancora per avviare la musica");
   });
 }     
-
+// Alternanza musica
 bg.addEventListener("ended",()=>{
   if(paused)return;
-
   currentTrack="mule";
   mule.currentTime=0;
   startMusic();
@@ -239,7 +239,6 @@ bg.addEventListener("ended",()=>{
   
 mule.addEventListener("ended",()=>{
   if(paused)return;
-
   currentTrack="rocket";
   bg.currentTime=0;
   startMusic();
