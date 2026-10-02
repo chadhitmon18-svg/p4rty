@@ -198,13 +198,14 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 <audio id="bgMusic" src="03 Rocket Jump Waltz.mp3" preload="auto"></audio>
 <audio id="muleMusic" src="12. M.U.L.E (Bitblaster Mix).mp3" preload="auto"></audio>  
 <audio id="pauseSound" src="pause.ogg" preload="auto"></audio>
+<audio id="winMusic" src="Your_team_won.wav" preload="auto"></audio>
 
 <script>
 function $(id){
   return document.getElementById(id);
 }
   
-const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound");
+const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound"), winSnd = $("winMusic");
 let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
   
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
@@ -357,6 +358,12 @@ function applyUnoEffect(c,player){
 }
 function finishUno(who){
   unoGameOver=true;
+  if(who === "player"){
+    bg.pause();
+    mule.pause();
+    winSnd.currentTime = 0;
+    winSnd.play().catch(()=>{});
+  }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="unoEndOverlay";
   overlay.innerHTML=`<div class="pause-box"><h2>${who==="player"?"HAI VINTO!":"HAI PERSO!"}</h2><p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p><button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();startUno()">Nuova partita</button></div>`;
   document.body.appendChild(overlay);
@@ -513,7 +520,12 @@ function bestBotMove(){
   const corners=empty.filter(i=>[0,2,6,8].includes(i));if(corners.length)return corners[Math.floor(Math.random()*corners.length)];
   return empty[Math.floor(Math.random()*empty.length)];
 }
-function endTris(w){trisOver=true;renderTris();$("trisMessage").textContent=w==="X"?"Hai vinto!":w==="O"?"Ha vinto il bot.":"Pareggio."}
+function endTris(w){trisOver=true;renderTris();if(w === "X"){
+    // Se vinci: stoppa la musica di sottofondo e fai partire quella di vittoria
+    bg.pause();
+    mule.pause();
+    winSnd.currentTime = 0;
+    winSnd.play().catch(()=>{})};$("trisMessage").textContent=w==="X"?"Hai vinto!":w==="O"?"Ha vinto il bot.":"Pareggio."}
 
 /* ===== NOMI COSE CITTÀ ===== */
 const words={
