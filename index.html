@@ -409,6 +409,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 
 <audio id="bgMusic" src="03 Rocket Jump Waltz.mp3" preload="auto"></audio>
 <audio id="muleMusic" src="12. M.U.L.E (Bitblaster Mix).mp3" preload="auto"></audio>  
+<audio id="ConfrontationMusic" src="Confrontation - Moderato 2009.mp3" preload="auto"></audio>
 <audio id="pauseSound" src="pause.ogg" preload="auto"></audio>
 <audio id="winMusic" src="Your_team_won.wav" preload="auto"></audio>
 <audio id="lostMusic" src="Your_team_lost.wav" preload="auto"></audio>
@@ -418,27 +419,37 @@ function $(id){
   return document.getElementById(id);
 }
   
-const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound"), winSnd = $("winMusic"), lostSnd=$("lostMusic");
+const bg=$("bgMusic"), mule=$("muleMusic"), confrontation=$("ConfrontationMusic"), pauseSnd=$("pauseSound"), winSnd = $("winMusic"), lostSnd=$("lostMusic");
 let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
   
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
   
 function startMusic(){
 const track=currentTrack==="rocket" ? bg : mule;  
+
+if(currentTrack==="rocket"){
+      $("musicBtn").textContent="♫ musica attiva";
+      $("musicState").textContent="♫ Rocket Jump Waltz";
+     }else if(currentTrack==="mule"){
+     track=mule;
+     }else{
+     track=confrontation;
+  }
   
 bg.volume=.28;
 mule.volume=.28;
+confrontation.volume=.28;
   
 track.play().then(()=>{
     musicStarted=true;
 
-    if(currentTrack==="rocket"){
-      $("musicBtn").textContent="♫ musica attiva";
+  if(currentTrack==="rocket"){
       $("musicState").textContent="♫ Rocket Jump Waltz";
-    }else{
-      $("musicBtn").textContent="♫ musica attiva";
+    }else if(currentTrack==="mule"){
       $("musicState").textContent="♫ M.U.L.E. (Bitblaster Mix)";
-    }
+    }else{
+      $("musicState").textContent="♫ Confrontation - Moderato 2009";
+    
   }).catch(()=>{
     toast("Premi ancora per avviare la musica");
   });
@@ -452,6 +463,13 @@ bg.addEventListener("ended",()=>{
 });
   
 mule.addEventListener("ended",()=>{
+  if(paused)return;
+  currentTrack="confrontation";
+  confrontation.currentTime=0;
+  startMusic();
+});
+
+confrontation.addEventListener("ended",()=>{
   if(paused)return;
   currentTrack="rocket";
   bg.currentTime=0;
@@ -475,7 +493,7 @@ document.addEventListener("pointerdown",()=>{if(!musicStarted && bg.paused) star
 function togglePause(){
   paused=!paused;
   $("pauseOverlay").classList.toggle("hidden",!paused);
-  if(paused){bg.pause(); pauseSnd.currentTime=0; pauseSnd.play().catch(()=>{}); $("pauseBtn").textContent="▶ Riprendi";}
+  if(paused){bg.pause();mule.pause();confrontation.pause();pauseSnd.currentTime=0; pauseSnd.play().catch(()=>{}); $("pauseBtn").textContent="▶ Riprendi";}
   else {startMusic(); $("pauseBtn").textContent="Ⅱ Pausa";}
 }
 $("pauseBtn").onclick=togglePause;
