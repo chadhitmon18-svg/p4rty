@@ -612,8 +612,17 @@ function finishUno(who){
   }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="unoEndOverlay";
   overlay.innerHTML=`<div class="pause-box"><h2>${who==="player"?"HAI VINTO!":"HAI PERSO!"}</h2><p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p><button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();winSnd.pause();winSnd.currentTime = 0;if(!paused && musicStarted) { 
-  const activeTrack = (currentTrack === 'rocket') ? bg : mule; 
-  activeTrack.play().catch(()=>{}); 
+ let activeTrack;
+
+ if(currentTrack==="rocket"){
+  activeTrack=bg;
+ }else if(currentTrack==="mule"){
+  activeTrack=mule;
+ }else{
+  activeTrack=confrontation;
+ }
+
+activeTrack.play().catch(()=>{});
   }startUno()">Nuova partita</button></div>`;
   
   document.body.appendChild(overlay);
@@ -845,15 +854,26 @@ function c4End(piece,cells){
 }
 function showC4Victory(playerWon){
   if(playerWon){
-    bg.pause();mule.pause();winSnd.currentTime=0;winSnd.play().catch(()=>{});
+    bg.pause();mule.pause();confrontation.pause();winSnd.currentTime=0;winSnd.play().catch(()=>{});
   }else{
   bg.pause();
   mule.pause();
+  confrontation.pause();
   lostSnd.currentTime=0;
   lostSnd.play().catch(()=>{});
 }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="c4EndOverlay";
-  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){const activeTrack=currentTrack==='rocket'?bg:mule;activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button>
+  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
+
+if(currentTrack==="rocket"){
+  activeTrack=bg;
+}else if(currentTrack==="mule"){
+  activeTrack=mule;
+}else{
+  activeTrack=confrontation;
+}
+
+activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button>
   </div>`;
   document.body.appendChild(overlay);
 }
@@ -988,16 +1008,27 @@ function snakeEnd(p){
   if(playerWon){
   bg.pause();
   mule.pause();
+  confrontation.pause();
   winSnd.currentTime=0;
   winSnd.play().catch(()=>{});
 }else{
   bg.pause();
   mule.pause();
+  confrontation.pause();
   lostSnd.currentTime=0;
   lostSnd.play().catch(()=>{});
 }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="snakeEndOverlay";
-  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p><button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){const activeTrack=currentTrack==='rocket'?bg:mule;activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
+  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p><button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
+if(currentTrack==="rocket"){
+  activeTrack=bg;
+}else if(currentTrack==="mule"){
+  activeTrack=mule;
+}else{
+  activeTrack=confrontation;
+}
+
+activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
   document.body.appendChild(overlay);
 }
 
