@@ -866,10 +866,13 @@ function showC4Victory(playerWon){
  }else{
    activeTrack=confrontation;
  }
+ activeTrack.play();
+}
 
-activeTrack.play();}startC4()">Nuova partita</button>
-</div>`;
-  document.body.appendChild(overlay);
+ startC4();
+ ">Nuova partita</button>
+ </div>`;
+ document.body.appendChild(overlay);
 }
 function c4Move(col){
   if(c4Over||c4Turn!=="player")return;
