@@ -398,14 +398,14 @@ $("pauseBtn").onclick=togglePause;
 function scrollToGames(){$("games").scrollIntoView({behavior:"smooth"})}
 function openGame(g){
   currentGame=g;$("gameArea").style.display="block";document.querySelectorAll("#gameArea>div:not(.game-screen)").forEach(()=>{});
-  ["unoGame","alienGame","trisGame","catGame"].forEach(x=>$(x).classList.add("hidden"));
+  ["unoGame","alienGame","trisGame","catGame","c4Game","snakeGame"].forEach(x=>$(x).classList.add("hidden"));
   $("unoGame").classList.remove("poker-bg");
-  $(g==="uno"?"unoGame":g==="alien"?"alienGame":g==="tris"?"trisGame":"catGame").classList.remove("hidden");
+  $(g==="uno"?"unoGame":g==="alien"?"alienGame":g==="tris"?"trisGame":g==="cat"?"catGame":g==="c4"?"c4Game":"snakeGame").classList.remove("hidden");
   if(g==="uno") $("unoGame").classList.add("poker-bg");
-  $("gameTitle").textContent={uno:"UNO!",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città"}[g];
+  $("gameTitle").textContent={uno:"UNO!",alien:"Alien Colors",tris:"Tris",cat:"Nomi Cose Città",c4:"Forza Quattro",snake:"Scale e Serpenti"}[g];
   $("gameStats").innerHTML="";
   $("gameArea").scrollIntoView({behavior:"smooth"});
-  if(g==="uno")startUno();if(g==="alien")startAlien();if(g==="tris")startTris();if(g==="cat")startCat();
+  if(g==="uno")startUno();if(g==="alien")startAlien();if(g==="tris")startTris();if(g==="cat")startCat();if(g==="c4")startC4();if(g==="snake")startSnake();
 }
 function closeGame(){if(currentGame==="alien")clearAlien();currentGame=null;$("gameArea").style.display="none";$("unoGame").classList.remove("poker-bg");scrollToGames()}
 
