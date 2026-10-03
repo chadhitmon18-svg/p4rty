@@ -425,9 +425,10 @@ let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
   
 function startMusic(){
-const track=currentTrack==="rocket" ? bg : mule;  
-
+let track;
+  
 if(currentTrack==="rocket"){
+      track=bg;
       $("musicBtn").textContent="♫ musica attiva";
       $("musicState").textContent="♫ Rocket Jump Waltz";
      }else if(currentTrack==="mule"){
@@ -477,9 +478,10 @@ confrontation.addEventListener("ended",()=>{
 });
 
 $("musicBtn").onclick=()=>{
-  if(!bg.paused || !mule.paused){
+  if(!bg.paused || !mule.paused || !confrontation.paused){
     bg.pause();
     mule.pause();
+    confrontation.pause();
     $("musicBtn").textContent="Avvia musica";
     $("musicState").textContent="♪ musica ferma";
   }else{
