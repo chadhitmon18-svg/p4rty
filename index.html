@@ -72,6 +72,12 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
  font-weight:1000;font-size:34px;box-shadow:0 8px 18px #0005;user-select:none;transition:.2s;position:relative}
 .card small{font-size:12px;text-transform:uppercase;letter-spacing:1px;position:absolute;top:7px;left:8px}
 .card.wild{background:linear-gradient(135deg,#e62e4f 0 25%,#e8b71d 25% 50%,#15a765 50% 75%,#1769ff 75%)}.card.red{background:#e62e4f}.card.blue{background:#1769ff}.card.green{background:#15a765}.card.yellow{background:#e8b71d;color:#151515}
+.joker-img{
+  width:70%;
+  height:70%;
+  object-fit:contain;
+  image-rendering:auto;
+}
 .card.playable{outline:4px solid #fff;box-shadow:0 0 0 7px #36e58d66,0 0 25px #36e58d;transform:translateY(-9px)}
 .card.bot{animation:deal .55s cubic-bezier(.2,.8,.2,1)}
 @keyframes deal{0%{opacity:0;transform:translateY(-80px) rotate(-8deg) scale(.7)}100%{opacity:1;transform:none}}
@@ -389,6 +395,12 @@ function cardLabel(c){
 }
 function cardHTML(c,cls=""){
   const colorClass=c.color||"wild";
+  if(c.type==="wild"){
+    return `<div class="card ${colorClass} ${cls}">
+      <small>JOLLY</small>
+      <img class="joker-img" src="joker.png" alt="Giullare">
+    </div>`;
+  }
   return `<div class="card ${colorClass} ${cls}"><small>${c.type==="number"?colorNames[c.color]:c.type}</small>${cardLabel(c)}</div>`;
 }
 function backCardHTML(){return `<div class="card back"></div>`}
