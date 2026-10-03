@@ -315,6 +315,37 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
         <div class="cat-log" id="catLog"></div>
       </div>
     </div>
+
+    <div id="c4Game" class="hidden center">
+      <div class="notice">Sei <b>rosso</b>. Il bot è <b>giallo</b>. Clicca una colonna per far cadere il tuo gettone.</div>
+      <div class="c4-wrap">
+        <div class="c4-board" id="c4Board"></div>
+        <div class="message" id="c4Message">Tocca una colonna per giocare.</div>
+        <button class="btn danger" onclick="startC4()">Nuova partita</button>
+      </div>
+    </div>
+
+   <div id="snakeGame" class="hidden">
+      <div class="snake-wrap">
+        <div class="notice center">Tu sei il rosso. Contro di te giocano <b>3 bot</b>. Tira il dado e raggiungi la casella 100.</div>
+        <div class="snake-layout">
+          <div class="snake-board" id="snakeBoard"></div>
+          <div class="snake-side">
+            <div class="center">
+              <div id="snakeDice" style="font-size:48px;font-weight:1000">🎲</div>
+              <button class="btn primary" id="snakeRoll" onclick="snakeRollDice()">Tira il dado</button>
+              <button class="btn danger" onclick="startSnake()" style="margin-top:8px">Nuova partita</button>
+            </div>
+            <div class="snake-players" id="snakePlayers"></div>
+            <div class="snake-log" id="snakeLog"></div>
+            <div class="snake-legend">
+              <b>Scale:</b> sali direttamente.<br>
+              <b>Serpenti:</b> scendi alla coda.
+            </div>
+          </div>
+        </div>
+        <div class="message center" id="snakeMessage"></div>
+      </div>
   </div>
 </section>
 </main>
