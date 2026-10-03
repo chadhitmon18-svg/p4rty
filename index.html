@@ -404,13 +404,14 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 <audio id="muleMusic" src="12. M.U.L.E (Bitblaster Mix).mp3" preload="auto"></audio>  
 <audio id="pauseSound" src="pause.ogg" preload="auto"></audio>
 <audio id="winMusic" src="Your_team_won.wav" preload="auto"></audio>
+<audio id="lostMusic" src="Your_team_lost.wav" preload="auto"></audio>
 
 <script>
 function $(id){
   return document.getElementById(id);
 }
   
-const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound"), winSnd = $("winMusic");
+const bg=$("bgMusic"), mule=$("muleMusic"), pauseSnd=$("pauseSound"), winSnd = $("winMusic"), lostSnd=$("lostMusic");
 let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
   
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
@@ -576,6 +577,11 @@ function finishUno(who){
     mule.pause();
     winSnd.currentTime = 0;
     winSnd.play().catch(()=>{});
+  }else{
+    bg.pause();
+    mule.pause();
+    lostSnd.currentTime = 0;
+    lostSnd.play().catch(()=>{});
   }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="unoEndOverlay";
   overlay.innerHTML=`<div class="pause-box"><h2>${who==="player"?"HAI VINTO!":"HAI PERSO!"}</h2><p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p><button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();winSnd.pause();winSnd.currentTime = 0;if(!paused && musicStarted) { 
@@ -813,7 +819,12 @@ function c4End(piece,cells){
 function showC4Victory(playerWon){
   if(playerWon){
     bg.pause();mule.pause();winSnd.currentTime=0;winSnd.play().catch(()=>{});
-  }
+  }else{
+  bg.pause();
+  mule.pause();
+  lostSnd.currentTime=0;
+  lostSnd.play().catch(()=>{});
+}
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="c4EndOverlay";
   overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;if(!paused&&musicStarted){const activeTrack=currentTrack==='rocket'?bg:mule;activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button></div>`;
   document.body.appendChild(overlay);
