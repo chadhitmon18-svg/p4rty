@@ -1027,15 +1027,7 @@ function snakeEnd(p){
 }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="snakeEndOverlay";
   overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p><button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
-if(currentTrack==="rocket"){
-  activeTrack=bg;
-}else if(currentTrack==="mule"){
-  activeTrack=mule;
-}else{
-  activeTrack=confrontation;
-}
-
-activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
+  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
   document.body.appendChild(overlay);
 }
 
