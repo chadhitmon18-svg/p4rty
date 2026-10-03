@@ -858,20 +858,8 @@ function showC4Victory(playerWon){
   lostSnd.play().catch(()=>{});
 }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="c4EndOverlay";
- overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
- if(currentTrack==="rocket"){
-   activeTrack=bg;
- }else if(currentTrack==="mule"){
-   activeTrack=mule;
- }else{
-   activeTrack=confrontation;
- }
- activeTrack.play();
-}
-
- startC4();
- ">Nuova partita</button>
- </div>`;
+  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila."Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
+  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button></div>`;
  document.body.appendChild(overlay);
 }
 function c4Move(col){
