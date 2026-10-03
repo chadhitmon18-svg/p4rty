@@ -224,8 +224,46 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
     </div>
     <button class="btn primary arcade-launch" onclick="openGame('cat')">GIOCA</button>
   </div>
+
+    <!-- CABINATO 5: FORZA QUATTRO -->
+  <div class="arcade-cabinet" style="--accent:#ffd84d">
+    <div class="arcade-marquee">
+      <span class="tag">05 · STRATEGIA</span>
+      <h3>Forza Quattro</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Impila i tuoi gettoni: quattro in fila per vincere.</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('c4')">GIOCA</button>
+  </div>
+
+  <!-- CABINATO 6: SCALE E SERPENTI -->
+  <div class="arcade-cabinet" style="--accent:#36e58d">
+    <div class="arcade-marquee">
+      <span class="tag">06 · DADI</span>
+      <h3>Scale e Serpenti</h3>
+    </div>
+    <div class="arcade-screen">
+      <p>Arriva alla casella 100 prima dei 3 bot. Le scale aiutano, i serpenti fanno tornare indietro.</p>
+    </div>
+    <div class="arcade-controls">
+      <div class="arcade-joystick"></div>
+      <div class="arcade-buttons">
+        <div class="arcade-btn-dot"></div>
+        <div class="arcade-btn-dot"></div>
+      </div>
+    </div>
+    <button class="btn primary arcade-launch" onclick="openGame('snake')">GIOCA</button>
+  </div>
+
 </section>
-  
 <section id="gameArea">
   <div class="game-screen">
     <div class="game-head">
@@ -629,6 +667,214 @@ function endTris(w){trisOver=true;renderTris();if(w === "X"){
     mule.pause();
     winSnd.currentTime = 0;
     winSnd.play().catch(()=>{})};$("trisMessage").textContent=w==="X"?"Hai vinto!":w==="O"?"Ha vinto il bot.":"Pareggio."}
+
+  /* ===== FORZA QUATTRO ===== */
+let c4=[],c4Over=false,c4Turn="player",c4Winning=[];
+const c4Rows=6,c4Cols=7;
+function startC4(){
+  c4=Array(c4Rows).fill(null).map(()=>Array(c4Cols).fill(""));
+  c4Over=false;c4Turn="player";c4Winning=[];
+  $("c4Message").textContent="Tocca a te. Scegli una colonna.";
+  renderC4();
+}
+function renderC4(){
+  const b=$("c4Board");b.innerHTML="";
+  for(let r=0;r<c4Rows;r++){
+    for(let col=0;col<c4Cols;col++){
+      const c=document.createElement("button");
+      c.className="c4-cell "+(c4[r][col]||"");
+      c.dataset.col=col;
+      c.onclick=()=>c4Move(col);
+      c.disabled=c4Over||c4Turn!=="player";
+      b.appendChild(c);
+    }
+  }
+  $("gameStats").innerHTML=`<span class="stat">Rosso = tu</span><span class="stat">Giallo = bot</span>`;
+}
+function c4Drop(col,piece){
+  for(let r=c4Rows-1;r>=0;r--){
+    if(!c4[r][col]){c4[r][col]=piece;return r}
+  }
+  return -1;
+}
+function c4CheckWin(piece){
+  const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(let r=0;r<c4Rows;r++)for(let col=0;col<c4Cols;col++){
+    if(c4[r][col]!==piece)continue;
+    for(const [dr,dc] of dirs){
+      const cells=[[r,col],[r+dr,col+dc],[r+dr*2,col+dc*2],[r+dr*3,col+dc*3]];
+      if(cells.every(([rr,cc])=>rr>=0&&rr<c4Rows&&cc>=0&&cc<c4Cols&&c4[rr][cc]===piece))return cells;
+    }
+  }
+  return null;
+}
+function c4LineFor(cells){
+  const board=$("c4Board");
+  const boardRect=board.getBoundingClientRect();
+  const first=board.children[cells[0][0]*c4Cols+cells[0][1]].getBoundingClientRect();
+  const last=board.children[cells[3][0]*c4Cols+cells[3][1]].getBoundingClientRect();
+  const x1=first.left+first.width/2-boardRect.left;
+  const y1=first.top+first.height/2-boardRect.top;
+  const x2=last.left+last.width/2-boardRect.left;
+  const y2=last.top+last.height/2-boardRect.top;
+  const dx=x2-x1,dy=y2-y1;
+  const len=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)*180/Math.PI;
+  const line=document.createElement("div");
+  line.className="c4-line";
+  line.style.left=x1+"px";line.style.top=(y1-4)+"px";
+  line.style.width=len+"px";line.style.setProperty("--c4-angle",angle+"deg");
+  board.classList.add("win-board");board.appendChild(line);
+}
+function c4End(piece,cells){
+  c4Over=true;c4Winning=cells;
+  renderC4();
+  cells.forEach(([r,col])=>$("c4Board").children[r*c4Cols+col].classList.add("win"));
+  setTimeout(()=>{
+    c4LineFor(cells);
+    setTimeout(()=>showC4Victory(piece==="x"),800);
+  },180);
+}
+function showC4Victory(playerWon){
+  if(playerWon){
+    bg.pause();mule.pause();winSnd.currentTime=0;winSnd.play().catch(()=>{});
+  }
+  const overlay=document.createElement("div");overlay.className="pause";overlay.id="c4EndOverlay";
+  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;if(!paused&&musicStarted){const activeTrack=currentTrack==='rocket'?bg:mule;activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button></div>`;
+  document.body.appendChild(overlay);
+}
+function c4Move(col){
+  if(c4Over||c4Turn!=="player")return;
+  if(c4Drop(col,"x")<0){toast("Questa colonna è piena.");return}
+  let w=c4CheckWin("x");if(w){renderC4();c4End("x",w);return}
+  if(c4.flat().every(Boolean)){c4Over=true;$("c4Message").textContent="Pareggio.";renderC4();return}
+  c4Turn="bot";$("c4Message").textContent="Il bot sta pensando...";renderC4();
+  setTimeout(c4Bot,450);
+}
+function c4Bot(){
+  if(c4Over||currentGame!=="c4")return;
+  let possible=[];
+  for(let col=0;col<c4Cols;col++)if(c4[0][col]==="")possible.push(col);
+  // Prova a vincere.
+  for(const col of possible){
+    const r=c4Drop(col,"o");
+    if(c4CheckWin("o")){renderC4();c4Turn="bot";setTimeout(()=>c4End("o",c4CheckWin("o")),80);return}
+    c4[r][col]="";
+  }
+  // Blocca la vittoria del giocatore.
+  for(const col of possible){
+    const r=c4Drop(col,"x");
+    const win=c4CheckWin("x");
+    c4[r][col]="";
+    if(win){c4Drop(col,"o");finishC4BotMove();return}
+  }
+  // Preferisce il centro, poi una colonna casuale.
+  const order=[3,2,4,1,5,0,6].filter(x=>possible.includes(x));
+  const col=order.length?order[Math.floor(Math.random()*Math.min(3,order.length))]:possible[Math.floor(Math.random()*possible.length)];
+  c4Drop(col,"o");finishC4BotMove();
+}
+function finishC4BotMove(){
+  const w=c4CheckWin("o");renderC4();
+  if(w){c4End("o",w);return}
+  if(c4.flat().every(Boolean)){c4Over=true;$("c4Message").textContent="Pareggio.";renderC4();return}
+  c4Turn="player";$("c4Message").textContent="Tocca a te.";
+  renderC4();
+}
+
+/* ===== SCALE E SERPENTI ===== */
+let snakePos=[1,1,1,1],snakeTurn=0,snakeOver=false,snakeTimer=null;
+const snakeNames=["Tu","Bot 1","Bot 2","Bot 3"];
+const snakeLadders={4:14,9:31,20:38,28:84,40:59,51:67,63:81,71:91};
+const snakeSnakes={17:7,54:34,62:19,64:60,87:24,93:73,95:75,99:78};
+function startSnake(){
+  snakeStop();snakePos=[1,1,1,1];snakeTurn=0;snakeOver=false;
+  $("snakeMessage").textContent="Tocca a te. Tira il dado.";
+  $("snakeDice").textContent="🎲";$("snakeLog").innerHTML="";
+  $("snakeRoll").disabled=false;
+  renderSnake();
+}
+function animateSnakeDice(roll){
+  const die=$("snakeDice");
+  die.classList.remove("rolling");
+  void die.offsetWidth;
+  die.classList.add("rolling");
+  setTimeout(()=>{die.textContent=["⚀","⚁","⚂","⚃","⚄","⚅"][roll-1]},280);
+  setTimeout(()=>die.classList.remove("rolling"),720);
+}
+function snakeStop(){clearTimeout(snakeTimer);snakeTimer=null}
+function snakeCellNumber(index){
+  // 1 in basso a sinistra, 100 in alto a sinistra.
+  const row=Math.floor((index-1)/10),col=(index-1)%10;
+  return row%2===0 ? row*10+col+1 : row*10+(10-col);
+}
+function renderSnake(){
+  const board=$("snakeBoard");board.innerHTML="";
+  for(let visual=100;visual>=1;visual--){
+    const cell=document.createElement("div");cell.className="snake-cell";
+    const num=document.createElement("span");num.className="num";num.textContent=visual;cell.appendChild(num);
+    if(snakeLadders[visual]){
+      const mark=document.createElement("div");mark.className="snake-ladder";mark.textContent="🪜";mark.title=`Scala: ${visual} → ${snakeLadders[visual]}`;cell.appendChild(mark);
+    }
+    if(snakeSnakes[visual]){
+      const mark=document.createElement("div");mark.className="snake-snake";mark.textContent="🐍";mark.title=`Serpente: ${visual} → ${snakeSnakes[visual]}`;cell.appendChild(mark);
+    }
+    for(let p=0;p<4;p++)if(snakePos[p]===visual){
+      const piece=document.createElement("div");piece.className=`snake-piece p${p}`;piece.textContent=p+1;
+      const offsets=[[0,0],[25,0],[0,25],[25,25]][p];
+      piece.style.left=`${4+offsets[0]}px`;piece.style.bottom=`${4+offsets[1]}px`;cell.appendChild(piece);
+    }
+    board.appendChild(cell);
+  }
+  $("snakePlayers").innerHTML=snakeNames.map((n,i)=>`<div class="snake-player ${i===snakeTurn&&!snakeOver?"active":""}"><span><b style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${["#ff3158","#36e58d","#1769ff","#ffd84d"][i]};margin-right:6px"></b>${n}</span><b>${snakePos[i]}</b></div>`).join("");
+  $("gameStats").innerHTML=`<span class="stat">Turno: ${snakeNames[snakeTurn]}</span><span class="stat">Tu: ${snakePos[0]}</span>`;
+}
+function snakeLog(text){
+  const log=$("snakeLog"),div=document.createElement("div");div.textContent=text;log.prepend(div);
+}
+function snakeMovePlayer(p,roll,done){
+  let target=Math.min(100,snakePos[p]+roll);
+  // Per arrivare esattamente al 100.
+  if(snakePos[p]+roll>100)target=snakePos[p];
+  snakePos[p]=target;renderSnake();
+  setTimeout(()=>{
+    if(snakePos[p]===100){snakeEnd(p);return}
+    if(snakeLadders[snakePos[p]]){
+      const from=snakePos[p];snakePos[p]=snakeLadders[from];snakeLog(`${snakeNames[p]} sale la scala: ${from} → ${snakePos[p]}`);renderSnake();
+    }else if(snakeSnakes[snakePos[p]]){
+      const from=snakePos[p];snakePos[p]=snakeSnakes[from];snakeLog(`${snakeNames[p]} scende col serpente: ${from} → ${snakePos[p]}`);renderSnake();
+    }
+    done();
+  },420);
+}
+function snakeNext(){
+  if(snakeOver)return;
+  snakeTurn=(snakeTurn+1)%4;renderSnake();
+  if(snakeTurn===0){$("snakeRoll").disabled=false;$("snakeMessage").textContent="Tocca a te. Tira il dado."}
+  else snakeTimer=setTimeout(snakeBotTurn,650);
+}
+function snakeRollDice(){
+  if(snakeOver||snakeTurn!==0)return;
+  $("snakeRoll").disabled=true;
+  const roll=1+Math.floor(Math.random()*6);animateSnakeDice(roll);
+  snakeLog(`Tu hai tirato ${roll}.`);
+  setTimeout(()=>{
+    snakeMovePlayer(0,roll,snakeNext);
+  },720);
+}
+function snakeBotTurn(){
+  if(snakeOver||currentGame!=="snake")return;
+  const roll=1+Math.floor(Math.random()*6);animateSnakeDice(roll);
+  snakeLog(`${snakeNames[snakeTurn]} ha tirato ${roll}.`);
+setTimeout(()=>{
+    snakeMovePlayer(snakeTurn,roll,snakeNext);
+  },720);}
+function snakeEnd(p){
+  snakeOver=true;snakeStop();$("snakeRoll").disabled=true;renderSnake();
+  const playerWon=p===0;
+  if(playerWon){bg.pause();mule.pause();winSnd.currentTime=0;winSnd.play().catch(()=>{});}
+  const overlay=document.createElement("div");overlay.className="pause";overlay.id="snakeEndOverlay";
+  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p><button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;if(!paused&&musicStarted){const activeTrack=currentTrack==='rocket'?bg:mule;activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
+  document.body.appendChild(overlay);
+}
 
 /* ===== NOMI COSE CITTÀ ===== */
 const words={
