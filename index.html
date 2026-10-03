@@ -118,6 +118,51 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 .pause-box{background:#101e39;border:1px solid #385587;border-radius:24px;padding:40px;text-align:center;box-shadow:0 25px 70px #0009}.pause-box h2{font-size:50px;margin:0 0 8px}
 .toast{position:fixed;right:20px;bottom:20px;z-index:120;padding:12px 15px;border-radius:12px;background:#12223f;border:1px solid #385484;box-shadow:0 12px 30px #0007;opacity:0;transform:translateY(15px);transition:.25s}
 .toast.show{opacity:1;transform:none}
+/* ===== FORZA QUATTRO ===== */
+.c4-wrap{max-width:760px;margin:auto}
+.c4-board{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;background:#0b2e78;border:5px solid #315da8;border-radius:18px;padding:10px;box-shadow:inset 0 0 30px #0008,0 15px 35px #0006;max-width:620px;margin:22px auto}
+.c4-cell{aspect-ratio:1;border:0;border-radius:50%;background:#07101f;box-shadow:inset 0 4px 8px #0009;position:relative;padding:0;cursor:pointer}
+.c4-cell.x{background:#ff3158;box-shadow:inset 0 3px 8px #8b0927,0 0 10px #ff315866}
+.c4-cell.o{background:#ffd84d;box-shadow:inset 0 3px 8px #9c7900,0 0 10px #ffd84d66}
+.c4-cell.win{animation:c4Win .65s ease-in-out infinite alternate;z-index:2}
+@keyframes c4Win{from{transform:scale(1)}to{transform:scale(1.13);filter:brightness(1.35)}}
+.c4-board.win-board{position:relative}
+.c4-line{position:absolute;height:8px;background:#fff;border-radius:8px;box-shadow:0 0 12px #fff,0 0 25px #fff;transform-origin:left center;z-index:5;pointer-events:none;animation:c4Line .75s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes c4Line{from{transform:rotate(var(--c4-angle)) scaleX(0)}to{transform:rotate(var(--c4-angle)) scaleX(1)}}
+
+/* ===== SCALE E SERPENTI ===== */
+.snake-wrap{max-width:900px;margin:auto}
+#snakeDice{display:inline-block;transform-style:preserve-3d}
+#snakeDice.rolling{animation:snakeDiceRoll .7s ease-in-out}
+@keyframes snakeDiceRoll{
+  0%{transform:rotate(0deg) scale(1)}
+  20%{transform:rotate(75deg) scale(1.12)}
+  45%{transform:rotate(180deg) scale(.92)}
+  70%{transform:rotate(285deg) scale(1.12)}
+  100%{transform:rotate(360deg) scale(1)}
+}
+.snake-layout{display:grid;grid-template-columns:minmax(420px,620px) 1fr;gap:20px;align-items:start}
+.snake-board{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);width:620px;height:620px;max-width:100%;margin:auto;border:5px solid #31518b;border-radius:16px;overflow:hidden;background:#07101f;box-shadow:0 15px 35px #0007}
+.snake-cell{position:relative;display:flex;align-items:center;justify-content:center;border:1px solid #29446f;font-weight:900;font-size:12px;background:#102346}
+.snake-cell:nth-child(even){background:#0d1d39}
+.snake-cell .num{position:absolute;top:3px;left:4px;color:#91a8d5;font-size:10px}
+.snake-piece{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:1000;border:2px solid #fff9;box-shadow:0 3px 7px #0009;position:absolute;z-index:4}
+.snake-piece.p0{background:#ff3158}.snake-piece.p1{background:#36e58d}.snake-piece.p2{background:#1769ff}.snake-piece.p3{background:#ffd84d;color:#151515}
+.snake-side{background:#0b1730;border:1px solid #2d4773;border-radius:16px;padding:15px}
+.snake-players{display:grid;gap:8px;margin:12px 0}
+.snake-player{padding:9px 10px;border:1px solid #2b436b;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+.snake-player.active{border-color:#fff;box-shadow:0 0 12px #fff3}
+.snake-log{max-height:180px;overflow:auto;font-size:12px;color:#aebbd8;line-height:1.5}
+.snake-legend{font-size:12px;color:var(--muted);line-height:1.6}
+.snake-ladder,.snake-snake{position:absolute;pointer-events:none;z-index:2}
+.snake-ladder{position:absolute;inset:8% 22%;display:flex;align-items:center;justify-content:center;font-size:38px;line-height:1;z-index:2;pointer-events:none;text-shadow:0 2px 5px #000;transform:rotate(-8deg)}
+.snake-ladder:before,.snake-ladder:after{display:none}
+.snake-ladder:before{top:15%}.snake-ladder:after{bottom:15%}
+.snake-snake{position:absolute;inset:4% 8%;display:flex;align-items:center;justify-content:center;font-size:38px;line-height:1;z-index:2;pointer-events:none;text-shadow:0 2px 5px #000;transform:rotate(-8deg)}
+@media(max-width:800px){
+  .snake-layout{grid-template-columns:1fr}
+  .snake-board{width:100%;height:auto;aspect-ratio:1;max-width:620px;margin:auto}
+}
 @media(max-width:800px){.hero{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.alien-field{height:430px;padding:0}.ship{width:135px;height:92px}.ship.green{left:10px}.ship.gray{right:10px}.alien{width:68px;height:76px}.tris{grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px)}}
 </style>
 </head>
