@@ -436,6 +436,10 @@ if(currentTrack==="rocket"){
      }else{
      track=confrontation;
   }
+
+bg.pause();
+mule.pause();
+confrontation.pause();
   
 bg.volume=.28;
 mule.volume=.28;
@@ -449,7 +453,7 @@ track.play().then(()=>{
     }else if(currentTrack==="mule"){
       $("musicState").textContent="♫ M.U.L.E. (Bitblaster Mix)";
     }else{
-      $("musicState").textContent="♫ Confrontation - Moderato 2009";
+      $("musicState").textContent="♫ Confrontation 2009";
     }
   }).catch(()=>{
     toast("Premi ancora per avviare la musica");
@@ -602,11 +606,13 @@ function finishUno(who){
   if(who === "player"){
     bg.pause();
     mule.pause();
+    confrontation.pause();
     winSnd.currentTime = 0;
     winSnd.play().catch(()=>{});
   }else{
     bg.pause();
     mule.pause();
+    confrontation.pause();
     lostSnd.currentTime = 0;
     lostSnd.play().catch(()=>{});
   }
@@ -783,6 +789,7 @@ function endTris(w){trisOver=true;renderTris();if(w === "X"){
     // Se vinci: stoppa la musica di sottofondo e fai partire quella di vittoria
     bg.pause();
     mule.pause();
+    confrontation.pause();
     winSnd.currentTime = 0;
     winSnd.play().catch(()=>{})};$("trisMessage").textContent=w==="X"?"Hai vinto!":w==="O"?"Ha vinto il bot.":"Pareggio."}
 
