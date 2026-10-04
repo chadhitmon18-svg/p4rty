@@ -12,11 +12,76 @@
   --muted:#9eacd0; --green:#36e58d; --gray:#aeb7c9; --yellow:#ffd84d;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:
- radial-gradient(circle at 10% 10%,#153c86 0,transparent 28%),
- radial-gradient(circle at 90% 20%,#7d1737 0,transparent 26%),var(--bg);color:var(--text);min-height:100vh}
-button,input{font:inherit}
+
+/* Applichiamo il font stile Wii (Eurostile / Geometric Sans-serif) a tutto tranne al logo */
+body, button, input {
+  font-family: "Eurostile", "Century Gothic", "Avenir", Inter, sans-serif;
+}
+
+body{margin:0;background:
+  radial-gradient(circle at 10% 10%,#153c86 0,transparent 28%),
+  radial-gradient(circle at 90% 20%,#7d1737 0,transparent 26%),var(--bg);color:var(--text);min-height:100vh}
+
 button{cursor:pointer}
+
+.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+  position:sticky;top:0;z-index:50;background:rgba(5,11,23,.88);backdrop-filter:blur(14px);border-bottom:1px solid #23365c}
+
+/* Il logo mantiene il suo font originale pesante/caratteristico */
+.logo{font-family: Inter, system-ui, sans-serif;font-weight:1000;font-size:30px;letter-spacing:-2px}.logo b{color:var(--red)}.logo span{color:var(--blue)}
+
+.top-actions{display:flex;gap:10px;align-items:center}
+
+/* Stile base dei bottoni ispirato al menu Wii */
+.btn {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(to bottom, #2b4a8f 0%, #16284c 50%, #0d1a33 100%);
+  color: #ffffff;
+  border-radius: 25px; /* Bordi molto arrotondati stile Wii */
+  padding: 12px 22px;
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 5px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 5px rgba(0, 0, 0, 0.4);
+  filter: brightness(1.15);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.btn.primary {
+  background: linear-gradient(to bottom, #5c9eff 0%, var(--blue) 50%, #0b3cb8 100%);
+  border-color: #99c2ff;
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 18px rgba(23, 105, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+}
+.btn.primary:hover {
+  box-shadow: 0 10px 25px rgba(23, 105, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+}
+.btn.danger {
+  background: linear-gradient(to bottom, #ff7690 0%, var(--red) 50%, #b80f33 100%);
+  border-color: #ffb3c1;
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 18px rgba(255, 49, 88, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+}
+.btn.danger:hover {
+  box-shadow: 0 10px 25px rgba(255, 49, 88, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+}
+/* Variante piccola (es. barra in alto) */
+.btn.small {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 20px;
+}#musicState{font-size:12px;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:28px 20px 60px}
+
 .topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;
  position:sticky;top:0;z-index:50;background:rgba(5,11,23,.88);backdrop-filter:blur(14px);border-bottom:1px solid #23365c}
 .topbar-gif{
@@ -34,8 +99,8 @@ button{cursor:pointer}
 .top-actions{display:flex;gap:10px;align-items:center}
 .btn{border:1px solid #31518b;background:#16284c;color:#fff;border-radius:12px;padding:10px 15px;font-weight:800;transition:.18s}
 .btn:hover{transform:translateY(-1px);filter:brightness(1.15)}
-.btn.primary{background:linear-gradient(135deg,var(--blue),#5c8cff);border-color:#6e99ff}
-.btn.danger{background:linear-gradient(135deg,var(--red),#ff5877);border-color:#ff7690}
+.btn.primary{background:linear-gradient(135deg,var(--blue),#5c8cff);border-color:#ffffff}
+.btn.danger{background:linear-gradient(135deg,var(--red),#ff5877);border-color:#ffffff}
 #snakeRoll:disabled{
   background:#555;
   color:#aaa;
@@ -73,6 +138,11 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
 .hidden{display:none!important}
 .center{text-align:center}
 .message{min-height:28px;color:#b9c6e7;font-weight:700;margin:10px}
+.message.win {
+  color:#36e58d; /* Verde per la vittoria */}
+
+.message.lose {
+  color:#f02e53; /* Rosso per la sconfitta */}
 .notice{padding:12px 14px;border:1px solid #334d80;background:#0b1730;border-radius:12px;color:#c8d3ee;margin-bottom:14px}
 .board{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
 .card{width:82px;height:112px;border-radius:13px;border:3px solid #fff7;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -171,6 +241,245 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
   .snake-board{width:100%;height:auto;aspect-ratio:1;max-width:620px;margin:auto}
 }
 @media(max-width:800px){.hero{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.alien-field{height:430px;padding:0}.ship{width:135px;height:92px}.ship.green{left:10px}.ship.gray{right:10px}.alien{width:68px;height:76px}.tris{grid-template-columns:repeat(3,80px);grid-template-rows:repeat(3,80px)}}
+
+/* ===== TEMA WII ===== */
+body.light-theme{
+  --blue:#2aa9d6;
+  --blue2:#6fc8e8;
+  --red:#e74b58;
+  --red2:#bd3340;
+  --bg:#eef0f4;
+  --panel:#ffffff;
+  --panel2:#f7f8fa;
+  --text:#4d5660;
+  --muted:#7c8790;
+  --green:#43c78b;
+  --gray:#b9bec4;
+  --yellow:#f4cf52;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(120,130,140,.055) 0px,
+      rgba(120,130,140,.055) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    linear-gradient(180deg,#fbfbfc 0%,#e9ebef 100%);
+  color:var(--text);
+}
+
+body.light-theme .topbar{
+  background:rgba(250,251,252,.94);
+  border-bottom:1px solid #cbd0d5;
+  box-shadow:0 2px 10px rgba(80,90,100,.12);
+  backdrop-filter:blur(10px);
+}
+
+body.light-theme .logo{color:#68737c}
+body.light-theme .logo span{color:#2aa9d6}
+body.light-theme .logo b{color:#e74b58}
+
+body.light-theme .btn{
+  color:#59646d;
+  background:linear-gradient(180deg,#ffffff 0%,#e5e8eb 100%);
+  border:1px solid #bcc4ca;
+  border-radius:18px;
+  box-shadow:0 2px 5px rgba(70,80,90,.14),inset 0 1px 1px #fff;
+}
+body.light-theme .btn:hover{
+  filter:none;
+  transform:translateY(-1px);
+  box-shadow:0 4px 8px rgba(70,80,90,.18),inset 0 1px 1px #fff;
+}
+body.light-theme .btn.primary{
+  color:#fff;
+  background:linear-gradient(180deg,#55c9ec 0%,#239bc5 100%);
+  border-color:#178aad;
+}
+body.light-theme .btn.danger{
+  color:#fff;
+  background:linear-gradient(180deg,#f27782 0%,#d94b59 100%);
+  border-color:#c83d4c;
+}
+
+body.light-theme main{padding-top:30px}
+
+body.light-theme .hero-card,
+body.light-theme .game-card,
+body.light-theme .game-screen{
+  background:linear-gradient(180deg,#ffffff 0%,#f1f3f5 100%);
+  border:1px solid #c7cdd2;
+  border-radius:20px;
+  box-shadow:0 7px 20px rgba(80,90,100,.14),inset 0 1px 0 #fff;
+}
+
+body.light-theme .hero h1{color:#68727a}
+body.light-theme .hero h1 em{color:#e74b58}
+body.light-theme .hero p{color:#68747d}
+
+body.light-theme .arcade-cabinet{
+  background:linear-gradient(180deg,#fafbfc 0%,#e2e5e8 100%);
+  border:1px solid #bfc5ca;
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 8px 20px rgba(80,90,100,.18),inset 0 1px 0 #fff;
+}
+body.light-theme .arcade-cabinet:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+}
+body.light-theme .arcade-marquee{
+  background:linear-gradient(180deg,#ffffff,#eef0f2);
+  border:1px solid color-mix(in srgb,var(--accent) 55%,#bfc5ca);
+  border-radius:13px;
+  box-shadow:0 2px 8px rgba(80,90,100,.12),inset 0 1px #fff;
+}
+body.light-theme .arcade-marquee h3{
+  color:#59646c;
+  text-shadow:none;
+}
+body.light-theme .arcade-marquee .tag{color:var(--accent)}
+
+body.light-theme .arcade-screen{
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(120,130,140,.08) 0px,
+      rgba(120,130,140,.08) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    linear-gradient(180deg,#f8f9fa,#e8ebee);
+  border:1px solid #c3c9ce;
+  border-radius:12px;
+  box-shadow:inset 0 1px 8px rgba(100,110,120,.12);
+}
+body.light-theme .arcade-screen p{
+  color:#68747c;
+}
+body.light-theme .arcade-screen::after{
+  background:linear-gradient(rgba(255,255,255,0) 50%,rgba(100,110,120,.035) 50%);
+  background-size:100% 4px;
+}
+body.light-theme .arcade-joystick{
+  background:radial-gradient(circle at 30% 30%,#f38a92,#d74b59);
+  border-color:#fff;
+  box-shadow:0 3px 6px rgba(80,80,80,.25);
+}
+body.light-theme .arcade-btn-dot{
+  box-shadow:0 2px 5px rgba(80,80,80,.2);
+  border-color:#fff;
+}
+
+body.light-theme .game-head h2{color:#59646d}
+body.light-theme .stat{
+  background:linear-gradient(#fff,#edf0f2);
+  border:1px solid #c5ccd1;
+  color:#64717a;
+}
+body.light-theme .message{color:#68747d}
+body.light-theme .notice{
+  background:linear-gradient(#fff,#f0f2f4);
+  border:1px solid #c8ced3;
+  color:#68747d;
+}
+body.light-theme .field label{color:#707b84}
+body.light-theme .field input{
+  background:#fff;
+  color:#4d5660;
+  border:1px solid #c1c8ce;
+}
+body.light-theme .field input:focus{
+  border-color:#43afd4;
+  box-shadow:0 0 0 3px rgba(42,169,214,.16);
+}
+
+body.light-theme .pause{
+  background:rgba(235,239,243,.72);
+  backdrop-filter:blur(8px);
+}
+body.light-theme .pause-box{
+  background:linear-gradient(180deg,#fff,#edf0f2);
+  border:1px solid #c1c8ce;
+  color:#59646d;
+  border-radius:22px;
+  box-shadow:0 18px 45px rgba(70,80,90,.25),inset 0 1px #fff;
+}
+body.light-theme .toast{
+  background:#fff;
+  border:1px solid #c2c9cf;
+  color:#59646d;
+  box-shadow:0 8px 22px rgba(70,80,90,.2);
+}
+
+/* Giochi: resa chiara coerente col Wii Menu */
+body.light-theme .tris .cell,
+body.light-theme .cell{
+  background:linear-gradient(180deg,#fff,#e8ebee);
+  border:1px solid #c0c7cc;
+  color:#5b6670;
+  box-shadow:0 2px 5px rgba(70,80,90,.12);
+}
+body.light-theme .cell:hover{background:#f7f9fa}
+body.light-theme .cell.x{color:#e74b58}
+body.light-theme .cell.o{color:#2aa9d6}
+
+body.light-theme .letter-box{
+  background:linear-gradient(180deg,#fff,#e8ebee);
+  border:1px solid #c1c8ce;
+  color:#69747c;
+  box-shadow:inset 0 1px #fff,0 5px 12px rgba(70,80,90,.1);
+}
+
+body.light-theme .c4-board{
+  background:#45a9d1;
+  border-color:#77c6df;
+  box-shadow:inset 0 0 20px rgba(50,110,135,.25),0 10px 22px rgba(70,80,90,.16);
+}
+body.light-theme .c4-cell{
+  background:#eef0f2;
+  box-shadow:inset 0 3px 6px rgba(70,80,90,.2);
+}
+body.light-theme .c4-cell.x{
+  background:#e95a66;
+  box-shadow:inset 0 3px 7px #a72f3a,0 0 7px rgba(233,90,102,.35);
+}
+body.light-theme .c4-cell.o{
+  background:#f2d45b;
+  box-shadow:inset 0 3px 7px #b39829,0 0 7px rgba(242,212,91,.35);
+}
+
+body.light-theme .snake-board{
+  background:#e9ecef;
+  border-color:#bfc6cc;
+  box-shadow:0 10px 25px rgba(70,80,90,.18);
+}
+body.light-theme .snake-cell{
+  background:#f7f8f9;
+  border-color:#cdd2d6;
+}
+body.light-theme .snake-cell:nth-child(even){background:#e9edf0}
+body.light-theme .snake-cell .num{color:#78838b}
+body.light-theme .snake-side{
+  background:linear-gradient(180deg,#fff,#edf0f2);
+  border-color:#c5ccd1;
+}
+body.light-theme .snake-player{
+  border-color:#ccd2d7;
+}
+body.light-theme .snake-player.active{
+  border-color:#48afd1;
+  box-shadow:0 0 10px rgba(42,169,214,.2);
+}
+body.light-theme .snake-legend,
+body.light-theme .snake-log{color:#707b84}
+
+body.light-theme #unoGame.poker-bg{
+  background:radial-gradient(circle at center,#5c9c72 0%,#3f7855 100%);
+  border-color:#72aa86;
+}
+
 </style>
 </head>
 <body>
@@ -180,6 +489,7 @@ main{max-width:1200px;margin:auto;padding:28px 20px 60px}
   <div class="top-actions">
     <span id="musicState">♪ musica pronta</span>
     <button class="btn small" id="musicBtn">Avvia musica</button>
+    <button class="btn small" id="themeBtn">☀ Tema Wii</button>
     <button class="btn small danger" id="pauseBtn">Ⅱ Pausa</button>
   </div>
 </header>
@@ -423,6 +733,20 @@ const bg=$("bgMusic"), mule=$("muleMusic"), confrontation=$("ConfrontationMusic"
 let currentGame=null, paused=false, musicStarted=false, currentTrack="rocket";
   
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove("show"),1800)}
+
+function setTheme(){
+  const light=document.body.classList.toggle("light-theme");
+  $("themeBtn").textContent=light?"☾ Tema scuro":"☀ Tema Wii";
+  localStorage.setItem("p4rtyTheme",light?"light":"dark");
+}
+
+const savedTheme=localStorage.getItem("p4rtyTheme");
+if(savedTheme==="light"){
+  document.body.classList.add("light-theme");
+  $("themeBtn").textContent="☾ Tema scuro";
+}
+$("themeBtn").onclick=setTheme;
+
   
 function startMusic(){
 let track;
@@ -616,8 +940,16 @@ function finishUno(who){
     lostSnd.currentTime = 0;
     lostSnd.play().catch(()=>{});
   }
-  const overlay=document.createElement("div");overlay.className="pause";overlay.id="unoEndOverlay";
-  overlay.innerHTML=`<div class="pause-box"><h2>${who==="player"?"HAI VINTO!":"HAI PERSO!"}</h2><p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p><button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;let activeTrack;if(!paused && musicStarted){if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play();}startUno()">Nuova partita</button></div>`;
+  const overlay=document.createElement("div");
+  overlay.className="pause";
+  overlay.id="unoEndOverlay";
+  overlay.innerHTML=`<div class="pause-box">
+    <h2 style="color: ${who === 'player' ? '#36e58d' : '#f02e53'};">
+      ${who==="player"?"HAI VINTO!":"HAI PERSO!"}
+    </h2>
+    <p>${who==="player"?"Hai finito tutte le tue carte.":"Il bot ha finito tutte le sue carte."}</p>
+    <button class="btn primary" onclick="document.getElementById('unoEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;let activeTrack;if(!paused && musicStarted){if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play();}startUno()">Nuova partita</button>
+  </div>`;
   
   document.body.appendChild(overlay);
 }
@@ -858,8 +1190,14 @@ function showC4Victory(playerWon){
   lostSnd.play().catch(()=>{});
 }
   const overlay=document.createElement("div");overlay.className="pause";overlay.id="c4EndOverlay";
-  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p><button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
-  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button></div>`;
+  overlay.innerHTML=`<div class="pause-box">
+  <h2 style="color: ${playerWon ? '#36e58d' : '#f02e53'};">
+    ${playerWon?"HAI VINTO!":"HAI PERSO!"}
+  </h2>
+  <p>${playerWon?"Hai impilato quattro gettoni in fila.":"Il bot ha impilato quattro gettoni in fila."}</p>
+  <button class="btn primary" onclick="document.getElementById('c4EndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
+  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startC4()">Nuova partita</button>
+</div>`;
  document.body.appendChild(overlay);
 }
 function c4Move(col){
@@ -1003,9 +1341,18 @@ function snakeEnd(p){
   lostSnd.currentTime=0;
   lostSnd.play().catch(()=>{});
 }
-  const overlay=document.createElement("div");overlay.className="pause";overlay.id="snakeEndOverlay";
-  overlay.innerHTML=`<div class="pause-box"><h2>${playerWon?"HAI VINTO!":"HAI PERSO!"}</h2><p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p><button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
-  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button></div>`;
+  const overlay=document.createElement("div");
+overlay.className="pause";
+overlay.id="snakeEndOverlay";
+overlay.innerHTML=`<div class="pause-box">
+  <h2 style="color: ${playerWon ? '#36e58d' : '#f02e53'};">
+    ${playerWon?"HAI VINTO!":"HAI PERSO!"}
+  </h2>
+  <p>${playerWon?"Sei arrivato alla casella 100.":snakeNames[p]+" è arrivato alla casella 100 prima di te."}</p>
+  <button class="btn primary" onclick="document.getElementById('snakeEndOverlay').remove();winSnd.pause();winSnd.currentTime=0;lostSnd.pause();lostSnd.currentTime=0;if(!paused&&musicStarted){let activeTrack;
+  if(currentTrack==='rocket'){activeTrack=bg;}else if(currentTrack==='mule'){activeTrack=mule;}else{activeTrack=confrontation;}activeTrack.play().catch(()=>{});}startSnake()">Nuova partita</button>
+</div>`;
+
   document.body.appendChild(overlay);
 }
 
